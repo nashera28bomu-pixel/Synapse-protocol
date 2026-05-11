@@ -1,24 +1,82 @@
 const Missions = [
-    {
-        id: "NAIROBI_GHOST",
-        title: "OPERATION: GHOST SIGNAL",
-        location: "NAIROBI CENTRAL DISTRICT",
-        briefing: `
-            <h2 style="color:#00d9ff">PRIMARY DIRECTIVE</h2>
-            <p>At 04:00 EAT, the Matatu transit grid was hijacked by a rogue neural burst. 
-            CymorTech satellites show a 'Ghost Signal' originating from the Old Railway Museum server vaults.</p>
-            <br>
-            <h3 style="color:#ff003c">RISK ASSESSMENT</h3>
-            <p>ERYX has flagged a 89% probability that this is a precursor to a total city blackout. 
-            However, Liara Shade reports anomalies in the packet headers—one of the updates you receive will be a fabrication by the intruder... or ERYX itself.</p>
-            <br>
-            <p><strong>MISSION:</strong> Identify the false data and purge the signal before the grid collapses.</p>
-        `,
-        updates: [
-            { id: 1, text: "[ALERT] Traffic lights in Upper Hill synchronized to Green. Chaos imminent.", type: "truth" },
-            { id: 2, text: "[ANALYSIS] Intruder IP traced to a residential villa in Karen.", type: "deception" },
-            { id: 3, text: "[SYSTEM] Emergency protocols bypassed in the CBD terminal.", type: "truth" }
-        ],
-        solution: 2
-    }
+
+{
+id:"NAIROBI_GHOST",
+
+title:"OPERATION GHOST SIGNAL",
+
+location:"NAIROBI CENTRAL DISTRICT",
+
+time:60,
+
+briefing:`
+
+<h2>MISSION BRIEFING</h2>
+
+<p>
+At exactly 04:13 EAT,
+multiple transport systems across Nairobi
+began responding to unauthorized neural traffic.
+</p>
+
+<br>
+
+<p>
+CymorTech satellites traced the intrusion
+to abandoned railway tunnels beneath the CBD.
+</p>
+
+<br>
+
+<p>
+ERYX predicts an 89% chance
+of total infrastructure collapse.
+</p>
+
+<br>
+
+<p style="color:#00e5ff">
+WARNING:
+One field update will be intentionally false.
+</p>
+
+`,
+
+updates:[
+
+{
+text:"Traffic systems locked to green in Upper Hill.",
+truth:true
+},
+
+{
+text:"Signal source traced to a Karen residence.",
+truth:false
+},
+
+{
+text:"Unknown neural burst detected underground.",
+truth:true
+},
+
+{
+text:"Emergency response network disconnected.",
+truth:true
+}
+
+],
+
+actions:[
+
+"TRACE SIGNAL",
+"ISOLATE NODE",
+"CUT POWER",
+"TRUST ERYX"
+
+],
+
+correct:2
+
+}
+
 ];
