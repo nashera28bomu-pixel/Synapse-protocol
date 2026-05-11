@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SYNAPSE PROTOCOL</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app-container">
+        <!-- PHASE 1: CYMORTECH PRESENTS -->
+        <section id="brand-intro" class="overlay">
+            <h2 class="fading-text">CYMORTECH SERVICES</h2>
+        </section>
+
+        <!-- PHASE 2: CINEMATIC TITLE -->
+        <section id="title-cinematic" class="overlay hidden">
+            <h1 class="glitch" data-text="SYNAPSE PROTOCOL">SYNAPSE PROTOCOL</h1>
+            <p class="sub-text">NEURAL UPLINK PENDING...</p>
+        </section>
+
+        <!-- PHASE 3: BIOMETRIC SCAN & BREATH SYNC -->
+        <section id="biometric-screen" class="overlay hidden">
+            <div class="scan-frame">
+                <div class="scanner-line"></div>
+                <video id="webcam-feed" autoplay playsinline></video>
+            </div>
+            <div class="sync-status">
+                <p>MATCH BREATHING TO PULSE</p>
+                <div class="pulse-circle"></div>
+            </div>
+            <button id="sync-btn" class="cyber-btn">INITIALIZE ERYX</button>
+        </section>
+
+        <!-- PHASE 4: MAIN GAME HUD -->
+        <main id="game-hud" class="hidden">
+            <div class="vignette"></div>
+            <header>
+                <div class="trust-container">
+                    <span>ERYX TRUST:</span>
+                    <div class="trust-bar"><div id="trust-fill"></div></div>
+                </div>
+            </header>
+            
+            <div id="mission-briefing" class="glass-panel">
+                <!-- Detailed mission injected here -->
+            </div>
+
+            <div id="feed-container"></div>
+
+            <nav class="hud-nav">
+                <button onclick="interact('liara')">LIARA</button>
+                <button onclick="interact('kael')">KAEL</button>
+            </nav>
+        </main>
+    </div>
+
+    <!-- AUDIO SCRIPT TAGS -->
+    <script src="characters.js"></script>
+    <script src="missions.js"></script>
+    <script src="ui/intro.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
