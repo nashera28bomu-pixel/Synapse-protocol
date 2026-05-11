@@ -1,64 +1,229 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SYNAPSE PROTOCOL</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+<title>SYNAPSE PROTOCOL | CYMORTECH</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-    <div id="app-container">
-        <!-- PHASE 1: CYMORTECH PRESENTS -->
-        <section id="brand-intro" class="overlay">
-            <h2 class="fading-text">CYMORTECH SERVICES</h2>
-        </section>
 
-        <!-- PHASE 2: CINEMATIC TITLE -->
-        <section id="title-cinematic" class="overlay hidden">
-            <h1 class="glitch" data-text="SYNAPSE PROTOCOL">SYNAPSE PROTOCOL</h1>
-            <p class="sub-text">NEURAL UPLINK PENDING...</p>
-        </section>
+<!-- MATRIX -->
+<canvas id="matrix"></canvas>
 
-        <!-- PHASE 3: BIOMETRIC SCAN & BREATH SYNC -->
-        <section id="biometric-screen" class="overlay hidden">
-            <div class="scan-frame">
-                <div class="scanner-line"></div>
-                <video id="webcam-feed" autoplay playsinline></video>
-            </div>
-            <div class="sync-status">
-                <p>MATCH BREATHING TO PULSE</p>
-                <div class="pulse-circle"></div>
-            </div>
-            <button id="sync-btn" class="cyber-btn">INITIALIZE ERYX</button>
-        </section>
+<!-- RED GLOW -->
+<div class="bg-glow"></div>
 
-        <!-- PHASE 4: MAIN GAME HUD -->
-        <main id="game-hud" class="hidden">
-            <div class="vignette"></div>
-            <header>
-                <div class="trust-container">
-                    <span>ERYX TRUST:</span>
-                    <div class="trust-bar"><div id="trust-fill"></div></div>
-                </div>
-            </header>
-            
-            <div id="mission-briefing" class="glass-panel">
-                <!-- Detailed mission injected here -->
-            </div>
+<!-- SCANLINES -->
+<div class="scanlines"></div>
 
-            <div id="feed-container"></div>
+<!-- FLOATING TEXT -->
+<div id="floating-text"></div>
 
-            <nav class="hud-nav">
-                <button onclick="interact('liara')">LIARA</button>
-                <button onclick="interact('kael')">KAEL</button>
-            </nav>
-        </main>
-    </div>
+<!-- INTRO -->
+<section id="intro-screen" class="screen active">
 
-    <!-- AUDIO SCRIPT TAGS -->
-    <script src="characters.js"></script>
-    <script src="missions.js"></script>
-    <script src="ui/intro.js"></script>
-    <script src="script.js"></script>
+<div class="intro-overlay"></div>
+
+<div class="intro-content">
+
+<img src="images/logo.png" class="logo">
+
+<p class="small-brand">
+CYMORTECH SERVICES PRESENTS
+</p>
+
+<h1 class="main-title glitch"
+data-text="SYNAPSE PROTOCOL">
+SYNAPSE PROTOCOL
+</h1>
+
+<p class="intro-desc">
+A classified neural warfare simulation powered by ERYX.<br>
+Trust nobody. Every update may be a lie.
+</p>
+
+<div class="tap-container">
+<div class="pulse-ring"></div>
+<p>TAP TO CONTINUE</p>
+</div>
+
+</div>
+
+</section>
+
+<!-- BIOMETRIC -->
+<section id="scanner-screen" class="screen hidden">
+
+<div class="scanner-box">
+
+<img src="images/scanframe.png"
+class="scan-frame">
+
+<video id="camera"
+autoplay
+playsinline></video>
+
+<div class="scan-line"></div>
+
+</div>
+
+<div class="scan-text">
+
+<h2>BIOMETRIC AUTHORIZATION</h2>
+
+<p>
+Align face within frame.<br>
+ERYX neural synchronization required.
+</p>
+
+<button id="scan-btn" class="cyber-btn">
+INITIALIZE ERYX
+</button>
+
+</div>
+
+</section>
+
+<!-- HUD -->
+<section id="game-screen" class="hidden">
+
+<header class="topbar">
+
+<div>
+OPERATIVE:
+<span id="player-name">UNKNOWN</span>
+</div>
+
+<div>
+TRUST:
+<span id="trust-level">100</span>
+</div>
+
+<div>
+THREAT:
+<span id="threat-level">89%</span>
+</div>
+
+<div>
+TIME:
+<span id="timer">60</span>s
+</div>
+
+</header>
+
+<!-- LEFT PANEL -->
+<div class="left-panel glass">
+
+<div class="eryx-header">
+
+<img src="images/eryx.png" class="avatar">
+
+<div>
+<h2>ERYX AI CORE</h2>
+<p id="eryx-status">Monitoring battlefield...</p>
+</div>
+
+</div>
+
+<div class="probability-wrap">
+
+<h1 id="probability">89%</h1>
+
+<p>MISSION FAILURE PROBABILITY</p>
+
+</div>
+
+<div class="variables">
+
+<div class="var-box">
+VARIABLE A
+<span id="var-a">STABLE</span>
+</div>
+
+<div class="var-box">
+VARIABLE B
+<span id="var-b">UNKNOWN</span>
+</div>
+
+<div class="var-box">
+FOCUS
+<span id="focus">100</span>
+</div>
+
+<div class="var-box">
+LOGIC
+<span id="logic">100</span>
+</div>
+
+</div>
+
+<div class="character-panel">
+
+<div class="character-card"
+onclick="talkTo('kael')">
+
+<img src="images/kael.png">
+
+<div>
+<h3>DR. KAEL VERIN</h3>
+<p>Tactical Warfare Specialist</p>
+</div>
+
+</div>
+
+<div class="character-card"
+onclick="talkTo('liara')">
+
+<img src="images/liara.png">
+
+<div>
+<h3>LIARA SHADE</h3>
+<p>Linguistic Intelligence Analyst</p>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- RIGHT PANEL -->
+<div class="right-panel glass">
+
+<div id="mission-briefing"></div>
+
+<div id="live-feed"></div>
+
+<div id="actions"></div>
+
+</div>
+
+</section>
+
+<!-- AUDIO -->
+<audio id="ambient"
+src="audio/ambient.mp3"
+loop></audio>
+
+<audio id="click"
+src="audio/click.mp3"></audio>
+
+<audio id="alert"
+src="audio/alert.mp3"></audio>
+
+<script src="characters.js"></script>
+<script src="missions.js"></script>
+<script src="script.js"></script>
+
 </body>
 </html>
