@@ -1,308 +1,150 @@
-const intro =
-document.getElementById("intro-screen");
+const intro = document.getElementById('intro-screen');
+const bio = document.getElementById('bio-screen');
+const hud = document.getElementById('hud');
 
-const scanner =
-document.getElementById("scanner-screen");
+const continueBtn = document.getElementById('continueBtn');
+const scanBtn = document.getElementById('scanBtn');
 
-const game =
-document.getElementById("game-screen");
+continueBtn.addEventListener('click',()=>{
 
-const ambient =
-document.getElementById("ambient");
+    playClick();
 
-let trust = 100;
-let probability = 89;
-let currentMission = Missions[0];
+    intro.classList.add('hidden');
+    bio.classList.remove('hidden');
 
-/* INTRO */
-
-intro.addEventListener("click",()=>{
-
-play("click");
-
-intro.classList.add("hidden");
-
-scanner.classList.remove("hidden");
-
-startCamera();
+    startCamera();
 
 });
 
-/* CAMERA */
+scanBtn.addEventListener('click',()=>{
+
+    playClick();
+
+    bio.classList.add('hidden');
+    hud.classList.remove('hidden');
+
+    loadMission(0);
+
+});
+
+function playClick(){
+
+    document.getElementById('clickSound').play();
+
+}
 
 async function startCamera(){
 
-try{
+    const video = document.getElementById('webcam');
 
-const stream =
-await navigator.mediaDevices.getUserMedia({
-video:true
-});
+    try{
 
-document.getElementById("camera").srcObject =
-stream;
+        const stream = await navigator.mediaDevices.getUserMedia({
+            video:true
+        });
 
-}catch(err){
+        video.srcObject = stream;
 
-console.log(err);
+    }catch(err){
 
-}
+        console.log('Camera unavailable');
 
-}
-
-/* START GAME */
-
-document.getElementById("scan-btn")
-.addEventListener("click",()=>{
-
-play("click");
-
-scanner.classList.add("hidden");
-
-game.classList.remove("hidden");
-
-ambient.volume = 0.4;
-ambient.play();
-
-startMission();
-
-});
-
-/* START MISSION */
-
-function startMission(){
-
-document.getElementById("mission-briefing")
-.innerHTML =
-currentMission.briefing;
-
-let i = 0;
-
-const interval = setInterval(()=>{
-
-if(i >= currentMission.updates.length){
-
-clearInterval(interval);
-
-showActions();
-
-return;
+    }
 
 }
 
-addFeed(currentMission.updates[i]);
+function loadMission(id){
 
-probability += Math.random()*2;
-
-updateHUD();
-
-i++;
-
-},5000);
+    document.getElementById('missionBrief').innerHTML =
+    Missions[id].briefing;
 
 }
 
-/* FEED */
+function startMission(id){
 
-function addFeed(update){
+    const feed = document.getElementById('liveFeed');
 
-play("alert");
+    feed.innerHTML = '';
 
-const div =
-document.createElement("div");
+    Missions[id].updates.forEach((u,i)=>{
 
-div.className = "feed-item";
+        setTimeout(()=>{
 
-div.innerHTML = `
-<h3>LIVE UPDATE</h3>
-<p>${update.text}</p>
-`;
+            const div = document.createElement('div');
 
-document.getElementById("live-feed")
-.prepend(div);
+            div.className = 'feed-item';
 
-}
+            div.innerText = u;
 
-/* ACTIONS */
+            feed.prepend(div);
 
-function showActions(){
+            updateProbability();
 
-const actions =
-document.getElementById("actions");
+        }, i*3000);
 
-actions.innerHTML = "";
-
-currentMission.actions.forEach((a,index)=>{
-
-const btn =
-document.createElement("button");
-
-btn.className = "action-btn";
-
-btn.innerText = a;
-
-btn.onclick = ()=>choose(index+1);
-
-actions.appendChild(btn);
-
-});
+    });
 
 }
 
-/* CHOOSE */
+function updateProbability(){
 
-function choose(choice){
+    const prob = document.getElementById('probability');
 
-play("click");
+    let num = parseInt(prob.innerText);
 
-if(choice === currentMission.correct){
+    num += Math.floor(Math.random()*6)-2;
 
-probability -= 18;
+    num = Math.max(10,Math.min(99,num));
 
-addFeed({
-text:"Correct tactical action executed."
-});
-
-}else{
-
-probability += 15;
-
-trust -= 20;
-
-addFeed({
-text:"ERYX detected catastrophic miscalculation."
-});
+    prob.innerText = num + '%';
 
 }
 
-updateHUD();
+function talkTo(person){
+
+    const box = document.getElementById('eryxDialogue');
+
+    const list = Characters[person].advice;
+
+    box.innerText =
+    Characters[person].name + ': ' +
+    list[Math.floor(Math.random()*list.length)];
 
 }
 
-/* CHARACTER TALK */
-
-function talkTo(name){
-
-play("click");
-
-const char =
-Characters[name];
-
-const line =
-char.lines[
-Math.floor(Math.random()*char.lines.length)
-];
-
-document.getElementById("eryx-status")
-.innerText =
-`${char.name}: ${line}`;
-
-}
-
-/* UPDATE HUD */
-
-function updateHUD(){
-
-document.getElementById("trust-level")
-.innerText = trust;
-
-document.getElementById("threat-level")
-.innerText =
-Math.floor(probability) + "%";
-
-document.getElementById("probability")
-.innerText =
-Math.floor(probability) + "%";
-
-document.getElementById("focus")
-.innerText =
-Math.max(10,trust);
-
-document.getElementById("logic")
-.innerText =
-Math.max(40,120-probability);
-
-}
-
-/* SOUND */
-
-function play(id){
-
-document.getElementById(id).play();
-
-}
-
-/* MATRIX */
-
-const canvas =
-document.getElementById("matrix");
-
-const ctx =
-canvas.getContext("2d");
+const canvas = document.getElementById('matrix');
+const ctx = canvas.getContext('2d');
 
 canvas.width = innerWidth;
 canvas.height = innerHeight;
 
-const letters =
-"01SYNAPSEERYX";
+const letters = '01SYNAPSECYMOR';
+const size = 16;
+const cols = canvas.width / size;
+const drops = Array(Math.floor(cols)).fill(1);
 
-const font = 16;
+function drawMatrix(){
 
-const cols =
-canvas.width/font;
+    ctx.fillStyle = 'rgba(0,0,0,.06)';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
 
-const drops =
-Array(Math.floor(cols)).fill(1);
+    ctx.fillStyle = '#ff003c';
+    ctx.font = size + 'px monospace';
 
-function matrix(){
+    for(let i=0;i<drops.length;i++){
 
-ctx.fillStyle =
-"rgba(0,0,0,.05)";
+        const txt = letters[Math.floor(Math.random()*letters.length)];
 
-ctx.fillRect(
-0,0,
-canvas.width,
-canvas.height
-);
+        ctx.fillText(txt,i*size,drops[i]*size);
 
-ctx.fillStyle = "#ff004c";
+        if(drops[i]*size > canvas.height && Math.random() > .97){
+            drops[i] = 0;
+        }
 
-ctx.font = font + "px monospace";
+        drops[i]++;
 
-for(let i=0;i<drops.length;i++){
-
-const txt =
-letters[Math.floor(
-Math.random()*letters.length
-)];
-
-ctx.fillText(
-txt,
-i*font,
-drops[i]*font
-);
-
-if(
-drops[i]*font >
-canvas.height &&
-Math.random() > .975
-){
-
-drops[i] = 0;
+    }
 
 }
 
-drops[i]++;
-
-}
-
-}
-
-setInterval(matrix,40);
-
-window.addEventListener("resize",()=>{
-
-canvas.width = innerWidth;
-canvas.height = innerHeight;
-
-});
+setInterval(drawMatrix,40);
