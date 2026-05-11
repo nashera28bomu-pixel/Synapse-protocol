@@ -2,228 +2,169 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-
-<title>SYNAPSE PROTOCOL | CYMORTECH</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>SYNAPSE PROTOCOL | CYMORTECH AAA</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<!-- MATRIX -->
 <canvas id="matrix"></canvas>
-
-<!-- RED GLOW -->
-<div class="bg-glow"></div>
-
-<!-- SCANLINES -->
 <div class="scanlines"></div>
+<div class="vignette"></div>
 
-<!-- FLOATING TEXT -->
-<div id="floating-text"></div>
+<!-- AUDIO -->
+<audio id="ambient" autoplay loop>
+    <source src="audio/ambient.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="clickSound">
+    <source src="audio/click.mp3" type="audio/mpeg">
+</audio>
 
 <!-- INTRO -->
 <section id="intro-screen" class="screen active">
 
-<div class="intro-overlay"></div>
+    <div class="logo-container">
 
-<div class="intro-content">
+        <div class="logo-ring"></div>
+        <div class="logo-ring ring2"></div>
 
-<img src="images/logo.png" class="logo">
+        <div class="logo-core">
+            <span>C</span>
+        </div>
 
-<p class="small-brand">
-CYMORTECH SERVICES PRESENTS
-</p>
+    </div>
 
-<h1 class="main-title glitch"
-data-text="SYNAPSE PROTOCOL">
-SYNAPSE PROTOCOL
-</h1>
+    <h1 class="main-title glitch" data-text="SYNAPSE PROTOCOL">
+        SYNAPSE PROTOCOL
+    </h1>
 
-<p class="intro-desc">
-A classified neural warfare simulation powered by ERYX.<br>
-Trust nobody. Every update may be a lie.
-</p>
+    <p class="subtitle">
+        CYMORTECH SERVICES PRESENTS
+    </p>
 
-<div class="tap-container">
-<div class="pulse-ring"></div>
-<p>TAP TO CONTINUE</p>
-</div>
+    <div class="intro-warning">
+        Unauthorized neural synchronization is prohibited.
+    </div>
 
-</div>
+    <button id="continueBtn" class="cyber-btn">
+        TAP TO CONTINUE
+    </button>
 
 </section>
 
 <!-- BIOMETRIC -->
-<section id="scanner-screen" class="screen hidden">
+<section id="bio-screen" class="screen hidden">
 
-<div class="scanner-box">
+    <div class="scanner-box">
 
-<img src="images/scanframe.png"
-class="scan-frame">
+        <div class="scanner-line"></div>
 
-<video id="camera"
-autoplay
-playsinline></video>
+        <video id="webcam" autoplay muted playsinline></video>
 
-<div class="scan-line"></div>
+        <div class="scanner-overlay"></div>
 
-</div>
+    </div>
 
-<div class="scan-text">
+    <div class="scan-status">
+        <h2>BIOMETRIC VERIFICATION</h2>
+        <p>Align face with scan frame</p>
+    </div>
 
-<h2>BIOMETRIC AUTHORIZATION</h2>
-
-<p>
-Align face within frame.<br>
-ERYX neural synchronization required.
-</p>
-
-<button id="scan-btn" class="cyber-btn">
-INITIALIZE ERYX
-</button>
-
-</div>
+    <button id="scanBtn" class="cyber-btn">
+        INITIALIZE ERYX
+    </button>
 
 </section>
 
 <!-- HUD -->
-<section id="game-screen" class="hidden">
+<section id="hud" class="hidden">
 
-<header class="topbar">
+    <header class="topbar">
 
-<div>
-OPERATIVE:
-<span id="player-name">UNKNOWN</span>
-</div>
+        <div>
+            OPERATIVE:
+            <span id="operativeName">GUEST</span>
+        </div>
 
-<div>
-TRUST:
-<span id="trust-level">100</span>
-</div>
+        <div>
+            TRUST:
+            <span id="trustLevel">100%</span>
+        </div>
 
-<div>
-THREAT:
-<span id="threat-level">89%</span>
-</div>
+        <div>
+            STATUS:
+            <span class="status-online">ONLINE</span>
+        </div>
 
-<div>
-TIME:
-<span id="timer">60</span>s
-</div>
+    </header>
 
-</header>
+    <main class="hud-layout">
 
-<!-- LEFT PANEL -->
-<div class="left-panel glass">
+        <!-- LEFT -->
+        <div class="panel left-panel">
 
-<div class="eryx-header">
+            <h2>ERYX CORE</h2>
 
-<img src="images/eryx.png" class="avatar">
+            <div class="probability-box">
+                <span id="probability">92%</span>
+            </div>
 
-<div>
-<h2>ERYX AI CORE</h2>
-<p id="eryx-status">Monitoring battlefield...</p>
-</div>
+            <div class="stat-grid">
 
-</div>
+                <div class="stat-card">
+                    Calmness
+                    <span id="calmness">100</span>
+                </div>
 
-<div class="probability-wrap">
+                <div class="stat-card">
+                    Focus
+                    <span id="focus">100</span>
+                </div>
 
-<h1 id="probability">89%</h1>
+                <div class="stat-card">
+                    Logic
+                    <span id="logic">100</span>
+                </div>
 
-<p>MISSION FAILURE PROBABILITY</p>
+                <div class="stat-card">
+                    Threat
+                    <span id="threat">LOW</span>
+                </div>
 
-</div>
+            </div>
 
-<div class="variables">
+            <div id="eryxDialogue" class="eryx-box">
+                ERYX: Awaiting mission synchronization...
+            </div>
 
-<div class="var-box">
-VARIABLE A
-<span id="var-a">STABLE</span>
-</div>
+            <div class="character-buttons">
+                <button onclick="talkTo('kael')">ASK KAEL</button>
+                <button onclick="talkTo('liara')">ASK LIARA</button>
+            </div>
 
-<div class="var-box">
-VARIABLE B
-<span id="var-b">UNKNOWN</span>
-</div>
+        </div>
 
-<div class="var-box">
-FOCUS
-<span id="focus">100</span>
-</div>
+        <!-- RIGHT -->
+        <div class="panel right-panel">
 
-<div class="var-box">
-LOGIC
-<span id="logic">100</span>
-</div>
+            <div id="missionBrief"></div>
 
-</div>
+            <div id="liveFeed"></div>
 
-<div class="character-panel">
+        </div>
 
-<div class="character-card"
-onclick="talkTo('kael')">
-
-<img src="images/kael.png">
-
-<div>
-<h3>DR. KAEL VERIN</h3>
-<p>Tactical Warfare Specialist</p>
-</div>
-
-</div>
-
-<div class="character-card"
-onclick="talkTo('liara')">
-
-<img src="images/liara.png">
-
-<div>
-<h3>LIARA SHADE</h3>
-<p>Linguistic Intelligence Analyst</p>
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<!-- RIGHT PANEL -->
-<div class="right-panel glass">
-
-<div id="mission-briefing"></div>
-
-<div id="live-feed"></div>
-
-<div id="actions"></div>
-
-</div>
+    </main>
 
 </section>
-
-<!-- AUDIO -->
-<audio id="ambient"
-src="audio/ambient.mp3"
-loop></audio>
-
-<audio id="click"
-src="audio/click.mp3"></audio>
-
-<audio id="alert"
-src="audio/alert.mp3"></audio>
 
 <script src="characters.js"></script>
 <script src="missions.js"></script>
 <script src="script.js"></script>
-
 </body>
 </html>
