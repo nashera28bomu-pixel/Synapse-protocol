@@ -60,14 +60,14 @@
                             <i class="fa-solid fa-rocket"></i>
                         </div>
                         <h3 class="text-2xl font-black text-white">Your Store is Live!</h3>
-                        <p class="text-xs text-slate-400">The link below is now active on the Vercel network.</p>
+                        <p class="text-xs text-slate-400">Your custom environment is now active on the network.</p>
                         <div class="flex items-center gap-2 bg-slate-950/80 p-4 rounded-2xl border border-white/10">
-                            <code id="final-url" class="flex-1 text-cyan-400 font-mono text-xs overflow-hidden text-ellipsis">Loading...</code>
+                            <code id="final-url" class="flex-1 text-cyan-400 font-mono text-xs overflow-hidden text-ellipsis">Loading URL...</code>
                             <button id="copy-link-btn" class="bg-cyan-500 hover:bg-cyan-400 text-slate-900 px-4 py-2 rounded-xl text-[10px] font-black transition-all flex items-center gap-2 cursor-pointer">
                                 <i class="fa-solid fa-copy"></i> COPY
                             </button>
                         </div>
-                        <a id="visit-store" href="#" target="_blank" class="block w-full bg-indigo-600 py-4 rounded-2xl text-sm font-bold hover:bg-indigo-500 transition-all">VISIT LIVE STORE</a>
+                        <a id="visit-store" href="#" target="_blank" class="block w-full bg-indigo-600 py-4 rounded-2xl text-sm font-bold hover:bg-indigo-500 transition-all text-center">VISIT LIVE STORE</a>
                     </div>
                 </div>
             </div>
@@ -99,15 +99,15 @@
         <div class="bg-slate-900 border border-white/10 w-full max-w-md rounded-3xl p-8 space-y-5">
             <h4 class="text-lg font-black text-white flex items-center gap-2"><i class="fa-solid fa-tag text-cyan-400"></i> Product Details</h4>
             <div class="space-y-3">
-                <input type="text" id="p-code" placeholder="Product Code (e.g. SNK-01)" class="w-full bg-slate-800 border border-white/5 rounded-xl p-3 text-sm">
-                <input type="text" id="p-desc" placeholder="Brief Description" class="w-full bg-slate-800 border border-white/5 rounded-xl p-3 text-sm">
+                <input type="text" id="p-code" placeholder="Product Code (e.g. SNK-01)" class="w-full bg-slate-800 border border-white/5 rounded-xl p-3 text-sm text-white">
+                <input type="text" id="p-desc" placeholder="Brief Description" class="w-full bg-slate-800 border border-white/5 rounded-xl p-3 text-sm text-white">
                 <div class="grid grid-cols-2 gap-3">
-                    <input type="number" id="p-price" placeholder="Price" class="w-full bg-slate-800 border border-white/5 rounded-xl p-3 text-sm">
-                    <input type="text" id="p-avail" placeholder="Sizes/Colors" class="w-full bg-slate-800 border border-white/5 rounded-xl p-3 text-sm">
+                    <input type="number" id="p-price" placeholder="Price" class="w-full bg-slate-800 border border-white/5 rounded-xl p-3 text-sm text-white">
+                    <input type="text" id="p-avail" placeholder="Sizes/Colors" class="w-full bg-slate-800 border border-white/5 rounded-xl p-3 text-sm text-white">
                 </div>
             </div>
             <div class="flex gap-3">
-                <button id="close-modal" class="flex-1 bg-slate-800 py-3 rounded-xl text-xs font-bold">Cancel</button>
+                <button id="close-modal" class="flex-1 bg-slate-800 py-3 rounded-xl text-xs font-bold text-white">Cancel</button>
                 <button id="save-product" class="flex-1 bg-cyan-500 text-slate-900 py-3 rounded-xl text-xs font-black">Add to Store</button>
             </div>
         </div>
@@ -146,7 +146,6 @@
                 const val = userInput.value.trim();
                 if(!val && currentStep < 7) return;
 
-                // Map data
                 const keys = ["bizName", "phone", "description", "persona", "payment", "delivery"];
                 if(currentStep <= 6) storeData[keys[currentStep-1]] = val;
 
@@ -167,7 +166,7 @@
             submitBtn.addEventListener("click", handleNext);
             userInput.addEventListener("keypress", (e) => e.key === "Enter" && handleNext());
 
-            // Modal Controls
+            // --- Modal Controls ---
             const modal = document.getElementById("manual-modal");
             document.getElementById("show-manual-modal").onclick = () => modal.classList.remove("hidden");
             document.getElementById("close-modal").onclick = () => modal.classList.add("hidden");
@@ -183,30 +182,40 @@
                 storeData.items.push(p);
                 document.getElementById("items-preview").textContent = `${storeData.items.length} items added to catalog`;
                 modal.classList.add("hidden");
-                // Clear modal
                 document.querySelectorAll("#manual-modal input").forEach(i => i.value = "");
             };
 
-            // Final Generation
+            // --- 🚀 Final Generation Logic 🚀 ---
             document.getElementById("finalize-btn").onclick = () => {
-                const slug = storeData.bizName.toLowerCase().replace(/[^a-z0-9]/g, '-');
-                // GENERATE REAL VERCEL-FRIENDLY LINK
+                // 1. Create a URL-friendly version of the business name
+                const slug = storeData.bizName.toLowerCase()
+                    .replace(/[^a-z0-9]/g, '-') // Replace non-alphanumeric with hyphens
+                    .replace(/-+/g, '-')       // Remove double hyphens
+                    .replace(/^-|-$/g, '');    // Trim hyphens from ends
+
+                // 2. Use window.location.origin to get your actual Vercel domain
                 const base = window.location.origin; 
                 const finalUrl = `${base}/shop/${slug}`;
 
+                // 3. Save to local storage so other pages can see the new config
                 user.storeLink = slug;
                 user.fullUrl = finalUrl;
                 user.config = storeData;
                 localStorage.setItem("cymor_merchant_user", JSON.stringify(user));
 
+                // 4. Update UI
                 document.getElementById("ai-bubble-wrap").classList.add("hidden");
                 document.getElementById("inventory-group").classList.add("hidden");
                 document.getElementById("success-result").classList.remove("hidden");
-                document.getElementById("final-url").textContent = finalUrl;
-                document.getElementById("visit-store").href = finalUrl;
+                
+                const urlDisplay = document.getElementById("final-url");
+                urlDisplay.textContent = finalUrl;
+                
+                const visitBtn = document.getElementById("visit-store");
+                visitBtn.href = finalUrl;
             };
 
-            // Copy Link
+            // Copy Link Utility
             document.getElementById("copy-link-btn").onclick = function() {
                 const url = document.getElementById("final-url").textContent;
                 navigator.clipboard.writeText(url).then(() => {
