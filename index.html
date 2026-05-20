@@ -13,6 +13,8 @@
         .glass-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.3s ease; }
         .glass-card:hover { background: rgba(255, 255, 255, 0.05); border-color: rgba(6, 182, 212, 0.3); transform: translateY(-4px); }
         .scrollbar-none::-webkit-scrollbar { display: none; }
+        .animate-fade-in { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="text-slate-100 min-h-screen antialiased flex flex-col justify-between">
@@ -80,27 +82,37 @@
                             </div>
                             <h4 class="font-bold text-slate-200">Workspace Locked</h4>
                             <div class="flex justify-center gap-3">
-                                <a href="login.html" class="text-xs font-bold bg-slate-800 px-5 py-2.5 rounded-xl">Log In</a>
-                                <a href="register.html" class="text-xs font-bold bg-cyan-500 text-slate-900 px-5 py-2.5 rounded-xl">Sign Up</a>
+                                <a href="login.html" class="text-xs font-bold bg-slate-800 px-5 py-2.5 rounded-xl hover:bg-slate-700 transition-all">Log In</a>
+                                <a href="register.html" class="text-xs font-bold bg-cyan-500 text-slate-900 px-5 py-2.5 rounded-xl hover:bg-cyan-400 transition-all">Sign Up</a>
                             </div>
                         </div>
 
-                        <div id="sandbox-unlocked" class="hidden space-y-4">
-                            <div class="p-4 bg-cyan-500/5 rounded-2xl border border-cyan-500/20 flex items-center gap-3">
-                                <i class="fa-solid fa-check-double text-emerald-400"></i>
-                                <div>
-                                    <h4 class="text-sm font-bold text-white" id="sandbox-welcome-title">System Ready</h4>
-                                    <p class="text-[10px] text-slate-500">Deploy your custom AI Link below.</p>
+                        <div id="sandbox-unlocked" class="hidden space-y-5 animate-fade-in">
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center text-white flex-shrink-0 shadow-lg">
+                                    <i class="fa-solid fa-robot"></i>
+                                </div>
+                                <div class="bg-slate-800/50 border border-white/5 p-4 rounded-2xl rounded-tl-none">
+                                    <p id="ai-hub-text" class="text-xs leading-relaxed text-slate-300 font-medium">
+                                        Welcome back! I am ready to deploy your store. Should we configure your environment now?
+                                    </p>
                                 </div>
                             </div>
-                            <div class="space-y-3">
-                                <a href="form.html" class="block p-4 rounded-2xl bg-slate-800/50 border border-white/5 hover:border-indigo-500/50 transition-all">
-                                    <p class="text-sm font-bold text-white">Manual Setup</p>
-                                    <p class="text-[10px] text-slate-500">Configure products manually</p>
+                            
+                            <div class="grid grid-cols-1 gap-3">
+                                <a href="form.html" class="group flex items-center justify-between p-4 rounded-2xl bg-slate-800/50 border border-white/5 hover:border-indigo-500/50 transition-all">
+                                    <div>
+                                        <p class="text-sm font-bold text-white group-hover:text-indigo-400 transition-colors">Start AI Setup</p>
+                                        <p class="text-[10px] text-slate-500">Initialize store parameters</p>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-right text-slate-600 group-hover:text-indigo-400 transition-all"></i>
                                 </a>
-                                <a href="form.html?mode=upload" class="block p-4 rounded-2xl bg-slate-800/50 border border-white/5 hover:border-cyan-500/50 transition-all">
-                                    <p class="text-sm font-bold text-white">Spreadsheet Sync</p>
-                                    <p class="text-[10px] text-slate-500">Bulk upload inventory</p>
+                                <a href="form.html?mode=upload" class="group flex items-center justify-between p-4 rounded-2xl bg-slate-800/50 border border-white/5 hover:border-cyan-500/50 transition-all">
+                                    <div>
+                                        <p class="text-sm font-bold text-white group-hover:text-cyan-400 transition-colors">Bulk Inventory</p>
+                                        <p class="text-[10px] text-slate-500">Upload CSV/Excel spreadsheet</p>
+                                    </div>
+                                    <i class="fa-solid fa-file-csv text-slate-600 group-hover:text-cyan-400 transition-all"></i>
                                 </a>
                             </div>
                         </div>
@@ -160,7 +172,7 @@
                         <p class="text-sm text-cyan-400 font-bold uppercase tracking-widest mt-1">Founder & Lead Developer</p>
                     </div>
                     <p class="text-slate-300 leading-relaxed text-lg italic">
-                        "Cymor Commerce isn't just a tool; it's a structural revolution for micro-enterprises. We've eliminated the technical friction of social commerce so you can focus on building your brand."
+                        "Cymor isn't just a tool; it's a structural revolution for micro-enterprises. We've eliminated the technical friction of social commerce so you can focus on building your brand."
                     </p>
                 </div>
             </div>
@@ -173,6 +185,31 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
+            // --- 🚀 Dynamic Routing Logic 🚀 ---
+            const currentPath = window.location.pathname;
+            if (currentPath.includes('/shop/')) {
+                const storeName = currentPath.split('/').pop();
+                console.log("System detected store environment:", storeName);
+                
+                // Hide landing page content and load shop view
+                document.querySelector('main').innerHTML = `
+                    <div class="min-h-[60vh] flex flex-col items-center justify-center text-center space-y-6 animate-fade-in">
+                        <div class="w-20 h-20 rounded-full bg-cyan-500/20 flex items-center justify-center text-cyan-400 text-3xl animate-pulse">
+                            <i class="fa-solid fa-shop"></i>
+                        </div>
+                        <h2 class="text-4xl font-black uppercase tracking-tighter">${storeName.replace(/-/g, ' ')}</h2>
+                        <p class="text-slate-400 max-w-md">Initializing secure commerce environment for this merchant...</p>
+                        <div class="w-64 h-1 bg-slate-800 rounded-full overflow-hidden">
+                            <div class="bg-cyan-500 h-full w-1/2 animate-[loading_2s_infinite_linear]"></div>
+                        </div>
+                    </div>
+                    <style>@keyframes loading { from { transform: translateX(-100%); } to { transform: translateX(200%); } }</style>
+                `;
+                // Add your actual Shop loading logic here (e.g., fetch products from localStorage/DB)
+                return; // Stop execution of the rest of the script
+            }
+
+            // --- Normal Landing Page Logic ---
             const user = JSON.parse(localStorage.getItem("cymor_merchant_user"));
             if (user) {
                 document.getElementById("guest-nav").classList.add("hidden");
@@ -186,7 +223,7 @@
 
                 document.getElementById("sandbox-locked").classList.add("hidden");
                 document.getElementById("sandbox-unlocked").classList.remove("hidden");
-                document.getElementById("sandbox-welcome-title").textContent = `Active: ${user.name}`;
+                document.getElementById("ai-hub-text").textContent = `System analysis complete for ${user.name}. Your workspace is active and ready for deployment.`;
                 document.getElementById("setup-step").textContent = user.storeLink ? "STATUS: LIVE" : "Step 2 of 3";
             }
 
