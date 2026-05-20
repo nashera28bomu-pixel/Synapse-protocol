@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Storefront — Powered by Cymor AI</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Google Fonts & FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, #090d16 0%, #0f1123 100%);
+        }
+        .glassmorphism {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .glass-panel {
+            background: rgba(13, 17, 30, 0.75);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .premium-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .premium-card:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(6, 182, 212, 0.25);
+            box-shadow: 0 10px 30px -10px rgba(6, 182, 212, 0.15);
+        }
+        /* Hide scrollbars completely while keeping full swipe mechanics */
+        .scrollbar-none::-webkit-scrollbar { display: none; }
+        .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="text-slate-100 min-h-screen flex flex-col justify-between antialiased">
+
+    <!-- 🟢 ELITE BRAND HEADER -->
+    <header class="sticky top-0 z-40 glassmorphism w-full px-6 py-4 flex justify-between items-center shadow-2xl">
+        <div class="flex items-center gap-3">
+            <div id="store-logo-icon" class="bg-gradient-to-tr from-cyan-500 via-indigo-500 to-purple-600 p-2.5 rounded-xl shadow-lg">
+                <i class="fa-solid fa-bag-shopping text-lg text-white"></i>
+            </div>
+            <div>
+                <h1 id="store-brand-title" class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">Cymor Premium Store</h1>
+                <p id="store-brand-status" class="text-[10px] text-cyan-400 font-bold tracking-widest uppercase flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse"></span> 24/7 AI Sales Agent Active
+                </p>
+            </div>
+        </div>
+        
+        <!-- Cart Tracking Bubble Node -->
+        <button id="cart-tray-trigger" class="relative glassmorphism hover:bg-slate-800/40 p-3 rounded-xl transition-all border border-white/10 cursor-pointer flex items-center gap-2">
+            <i class="fa-solid fa-cart-shopping text-sm text-cyan-400"></i>
+            <span class="text-xs font-bold hidden sm:inline">Bag</span>
+            <span id="global-cart-count" class="bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[10px] font-black px-2 py-0.5 rounded-md shadow-md">0</span>
+        </button>
+    </header>
+
+    <!-- 🚀 MAIN CONVERSATIONAL ENGINE HUB LAYER -->
+    <main class="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+        
+        <!-- LEFT SCREEN COLUMN: THE 10/10 CORE AI CONVERSATIONAL ASSISTANT FRAME (7 Cols) -->
+        <section class="lg:col-span-7 flex flex-col glass-panel rounded-2xl overflow-hidden shadow-2xl min-h-[550px] lg:min-h-[620px]">
+            <!-- Bot Information Header Status Strip -->
+            <div class="bg-slate-950/40 border-b border-white/5 p-4 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 rounded-xl bg-cyan-500/10 text-cyan-400 text-xs"><i class="fa-solid fa-robot"></i></div>
+                    <div>
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300">Live AI Negotiation Console</h3>
+                        <p class="text-[10px] text-slate-500">System responds instantaneously to item queries</p>
+                    </div>
+                </div>
+                <button id="clear-chat-log" class="text-[10px] text-slate-500 hover:text-rose-400 uppercase font-mono tracking-wider transition-colors cursor-pointer">Reset Stream</button>
+            </div>
+
+            <!-- Messages Stream Rendering Area Frame -->
+            <div id="ai-chat-messages" class="flex-1 p-4 overflow-y-auto space-y-4 scrollbar-none">
+                <!-- Injected Initial Core Smart Response Bubble -->
+                <div class="flex items-start gap-3 max-w-[85%]">
+                    <div class="bg-slate-800 p-2 rounded-xl text-cyan-400 flex-shrink-0 mt-0.5 shadow-md"><i class="fa-solid fa-brain text-xs"></i></div>
+                    <div class="bg-slate-900/80 text-slate-200 border border-white/5 rounded-2xl rounded-tl-none p-3.5 space-y-2 text-xs sm:text-sm shadow-inner leading-relaxed">
+                        <p id="ai-dynamic-greeting">🔥 Welcome! I am your premium dedicated shopping assistant. I have mapped this store's complete inventory, delivery corridors, and payment configurations.</p>
+                        <p class="text-[11px] text-slate-400">Ask me for specific items, ask to view our premium collections, or filter by your target budget limit!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Context Dependent Suggestion Chip Track -->
+            <div id="intelligent-reply-chips" class="px-4 py-2 flex gap-2 overflow-x-auto whitespace-nowrap scrollbar-none border-t border-white/5 bg-slate-950/20">
+                <!-- Extracted and injected dynamically via catalog parameters -->
+                <button class="sales-chip bg-slate-900 border border-white/5 hover:border-cyan-500/30 rounded-lg px-3 py-1.5 text-[11px] font-medium text-slate-300 transition-all cursor-pointer">📦 Show Full Menu</button>
+                <button class="sales-chip bg-slate-900 border border-white/5 hover:border-cyan-500/30 rounded-lg px-3 py-1.5 text-[11px] font-medium text-slate-300 transition-all cursor-pointer">⚡ Latest Releases</button>
+                <button class="sales-chip bg-slate-900 border border-white/5 hover:border-cyan-500/30 rounded-lg px-3 py-1.5 text-[11px] font-medium text-slate-300 transition-all cursor-pointer">🚚 Delivery Routes</button>
+            </div>
+
+            <!-- Customer Text Entry and Dispatch Interface Module -->
+            <div class="p-3 bg-slate-950/40 border-t border-white/5 flex items-center gap-2">
+                <input type="text" id="customer-chat-input" placeholder="Type shoe codes, sizes, or ask questions..." class="flex-1 bg-slate-900/60 border border-white/10 rounded-xl px-4 py-3 text-xs sm:text-sm focus:outline-none focus:border-cyan-500 text-slate-100 placeholder-slate-600 transition-colors">
+                <button id="dispatch-chat-btn" class="bg-gradient-to-tr from-cyan-500 to-indigo-500 hover:scale-[1.02] transition-all text-white p-3.5 rounded-xl cursor-pointer shadow-lg shadow-indigo-500/10">
+                    <i class="fa-solid fa-paper-plane text-xs sm:text-sm"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- RIGHT SCREEN COLUMN: THE PERSUASIVE DYNAMIC DISPLAY PORTAL & CART MATRIX (5 Cols) -->
+        <section class="lg:col-span-5 flex flex-col gap-6">
+            
+            <!-- UPPER HALF: DYNAMIC DISPLAY PORTAL (Injected Menus or Specific Filter Matching Queries) -->
+            <div class="glass-panel rounded-2xl p-4 flex flex-col h-[320px]">
+                <div class="flex items-center justify-between border-b border-white/5 pb-2.5 mb-3">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span> Live Interactive Display Catalog
+                    </h4>
+                    <span id="display-count-badge" class="text-[10px] text-slate-500 font-mono">0 Items Loaded</span>
+                </div>
+                
+                <!-- Horizontal/Vertical Responsive Ingestion Feed -->
+                <div id="dynamic-display-grid" class="flex-1 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 gap-3 scrollbar-none">
+                    <!-- Default State Prompt Frame -->
+                    <div class="col-span-full flex flex-col items-center justify-center text-center p-6 text-slate-500 space-y-2">
+                        <i class="fa-solid fa-wand-magic text-2xl text-slate-700"></i>
+                        <p class="text-xs max-w-xs">Items requested in chat or matching your criteria render here with instant sizing mechanics.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LOWER HALF: THE HIGH-CONVERSION PERSUASIVE CHECKOUT FRAME -->
+            <div class="glass-panel rounded-2xl p-4 flex flex-col flex-1 min-h-[250px]">
+                <div class="flex items-center justify-between border-b border-white/5 pb-2.5 mb-3">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+                        <i class="fa-solid fa-receipt text-pink-400"></i> Staged Order Invoice Parameters
+                    </h4>
+                    <button id="clear-bag-btn" class="text-[10px] text-slate-500 hover:text-rose-400 transition-colors cursor-pointer">Clear Bag</button>
+                </div>
+
+                <!-- Active Items inside Cart Accumulator List -->
+                <div id="checkout-items-list" class="flex-1 overflow-y-auto space-y-2 max-h-[140px] scrollbar-none text-xs">
+                    <p class="text-slate-600 text-center py-4 italic">Your current bag is empty. Request items from the assistant above!</p>
+                </div>
+
+                <!-- Customer Logistics Metadata Form Frame -->
+                <div class="border-t border-white/5 pt-3 mt-2 space-y-2">
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="text" id="cust-name" placeholder="Your Full Name" class="bg-slate-900 border border-white/5 rounded-lg p-2 text-[11px] text-white focus:outline-none focus:border-cyan-500">
+                        <input type="tel" id="cust-phone" placeholder="WhatsApp Phone (e.g. 0712345678)" class="bg-slate-900 border border-white/5 rounded-lg p-2 text-[11px] text-white focus:outline-none focus:border-cyan-500">
+                    </div>
+                    <input type="text" id="cust-location" placeholder="Specific Delivery Location / Drop Point" class="w-full bg-slate-900 border border-white/5 rounded-lg p-2 text-[11px] text-white focus:outline-none focus:border-cyan-500">
+                </div>
+
+                <!-- Financial Aggregation Total Summary Module -->
+                <div class="border-t border-white/5 pt-3 mt-3 flex items-center justify-between text-xs sm:text-sm">
+                    <span class="font-bold text-slate-400">Total Sum (Inc. Delivery):</span>
+                    <span id="invoice-gross-total" class="font-black text-cyan-400 text-base">KSh 0</span>
+                </div>
+
+                <!-- Final Conversion Submission Trigger Node -->
+                <button id="finalize-order-whatsapp-btn" class="w-full bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 hover:scale-[1.005] transition-all text-slate-950 font-black py-3 rounded-xl shadow-xl shadow-emerald-500/10 flex items-center justify-center gap-2 cursor-pointer text-xs uppercase tracking-wider mt-3">
+                    <i class="fa-brands fa-whatsapp text-sm"></i> Secure and Complete Order via WhatsApp
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- 💳 UNIVERSAL PLATFORM FOOTER -->
+    <footer class="w-full border-t border-white/5 bg-slate-950/60 px-6 py-4 text-center text-xs text-slate-600">
+        <p>&copy; 2026 CymorTechServices. Powered by Cymor Core AI Ecosystem. Developed by Legendary Smiley Cymor.</p>
+    </footer>
+
+    <!-- ⚙️ COMPACT PERSUASION REASONING & RUNTIME SCRIPT NODE -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // --- CORE MULTI-TENANT BACKBONE INGESTION ENGINE ---
+            // Read active workspace configuration profiles from browser storage parameters
+            const activeSessionUser = JSON.parse(localStorage.getItem("cymor_merchant_user"));
+            
+            // Default premium demo fallback records if script runs isolated outside session matrices
+            let activeMerchantConfig = {
+                businessName: "Cymor Tech Elite Sneakers",
+                whatsappNumber: "254113821327",
+                description: "Premium elite tier footwear repository operating under CymorTechServices protocols.",
+                menuLayout: "Air Jordan Retro, Nike Air Force, Designer Tracks, Slides",
+                paymentGateways: "Lipa na M-Pesa Till Number 0113821327",
+                deliveryMatrix: "Instant dispatch via standard riders inside Nairobi CBD. Nationwide courier drop parcels.",
+                itemsArray: [
+                    { id: "CS01", name: "Air Jordan Retro 4 'Bred'", price: 4500, description: "Premium retro layout execution with high-durability classic trim borders." },
+                    { id: "CS02", name: "Nike Air Force 1 '07 Premium", price: 3800, description: "All-white tailored leather finish with custom signature structural insoles." },
+                    { id: "CS03", name: "Cymor Cyber Track Special", price: 5500, description: "Next-gen aerodynamic runner with glowing pattern profiles." },
+                    { id: "CS04", name: "Yeezy Slide Onyx Edition", price: 2500, description: "Ultra-flexible comfort foam design perfect for routine utility usage." }
+                ]
+            };
+
+            // Overwrite mock properties if active merchant setup parameters are present
+            if (activeSessionUser && activeSessionUser.metadataConfig) {
+                activeMerchantConfig = activeSessionUser.metadataConfig;
+                document.getElementById("store-brand-title").textContent = activeMerchantConfig.businessName;
+                document.getElementById("ai-dynamic-greeting").innerHTML = `👋 Welcome to <strong>${activeMerchantConfig.businessName}</strong>! I am your intelligent 24/7 assistant. I can handle immediate product search queries, locate sizes, explain delivery structures across <em>${activeMerchantConfig.deliveryMatrix}</em>, and prepare your WhatsApp invoices dynamically. Let me know what fits you're searching for!`;
+            }
+
+            // Global Cart Tracking Structure Matrix
+            let internalShoppingBag = [];
+
+            // DOM Hook References
+            const msgStream = document.getElementById("ai-chat-messages");
+            const inputField = document.getElementById("customer-chat-input");
+            const sendBtn = document.getElementById("dispatch-chat-btn");
+            const chipTriggers = document.querySelectorAll(".sales-chip");
+            const displayGrid = document.getElementById("dynamic-display-grid");
+            const displayCountBadge = document.getElementById("display-count-badge");
+            const cartItemsList = document.getElementById("checkout-items-list");
+            const grossTotalLabel = document.getElementById("invoice-gross-total");
+            const globalCartCountLabel = document.getElementById("global-cart-count");
+            const finalizeOrderBtn = document.getElementById("finalize-order-whatsapp-btn");
+            const clearBagBtn = document.getElementById("clear-bag-btn");
+            const clearChatBtn = document.getElementById("clear-chat-log");
+
+            // --- RENDER DYNAMIC CATALOG CARDS ---
+            function renderItemsToDisplayPortal(productsArray) {
+                if(productsArray.length === 0) {
+                    displayGrid.innerHTML = `
+                        <div class="col-span-full flex flex-col items-center justify-center text-center p-6 text-slate-600">
+                            <i class="fa-solid fa-face-frown text-xl"></i>
+                            <p class="text-xs mt-1">No items match your exact textual parameter request.</p>
+                        </div>`;
+                    displayCountBadge.textContent = "0 Items Selected";
+                    return;
+                }
+
+                displayGrid.innerHTML = "";
+                displayCountBadge.textContent = `${productsArray.length} Premium Options Loaded`;
+
+                productsArray.forEach(item => {
+                    const card = document.createElement("div");
+                    card.className = "premium-card p-3 rounded-xl flex flex-col justify-between space-y-2 text-left";
+                    card.innerHTML = `
+                        <div>
+                            <div class="flex justify-between items-start">
+                                <span class="bg-cyan-500/10 text-cyan-400 font-mono text-[9px] px-1.5 py-0.5 rounded border border-cyan-500/20 uppercase font-bold">${item.id}</span>
+                                <span class="text-emerald-400 font-black text-xs font-mono">KSh ${item.price.toLocaleString()}</span>
+                            </div>
+                            <h5 class="text-xs font-bold text-white tracking-tight mt-1 truncate">${item.name}</h5>
+                            <p class="text-[10px] text-slate-400 line-clamp-2 mt-0.5 leading-snug">${item.description}</p>
+                        </div>
+                        <button onclick="globalAppendItemToBag('${item.id}')" class="w-full bg-slate-800 hover:bg-cyan-500 hover:text-slate-950 font-bold py-1.5 rounded-lg text-[10px] tracking-wide transition-all cursor-pointer uppercase">
+                            + Stage Item
+                        </button>
+                    `;
+                    displayGrid.appendChild(card);
+                });
+            }
+
+            // Expose append action globally so inline onclick events execution scopes intercept it safely
+            window.globalAppendItemToBag = function(productId) {
+                const targetItem = activeMerchantConfig.itemsArray.find(i => i.id === productId);
+                if(targetItem) {
+                    internalShoppingBag.push(targetItem);
+                    recalculateGrossOrderMatrix();
+                    appendBotMessageToStream(`🛒 <strong>Excellent Selection!</strong> I have added the **${targetItem.name}** directly to your checkout summary tray. Fill out your delivery coordinates below to complete the conversion loop!`);
+                }
+            };
+
+            // --- RECALCULATE SHOPPING INVOICES STATE ---
+            function recalculateGrossOrderMatrix() {
+                globalCartCountLabel.textContent = internalShoppingBag.length;
+                
+                if(internalShoppingBag.length === 0) {
+                    cartItemsList.innerHTML = `<p class="text-slate-600 text-center py-4 italic">Your current bag is empty. Request items from the assistant above!</p>`;
+                    grossTotalLabel.textContent = "KSh 0";
+                    return;
+                }
+
+                cartItemsList.innerHTML = "";
+                let accumulatedPriceSum = 0;
+
+                internalShoppingBag.forEach((item, index) => {
+                    accumulatedPriceSum += item.price;
+                    const row = document.createElement("div");
+                    row.className = "flex items-center justify-between p-2 rounded-lg bg-slate-900/60 border border-white/5";
+                    row.innerHTML = `
+                        <div class="flex flex-col max-w-[70%]">
+                            <span class="font-bold text-white text-[11px] truncate">${item.name}</span>
+                            <span class="text-[9px] text-slate-500 font-mono">${item.id}</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="font-mono font-bold text-cyan-400 text-[11px]">KSh ${item.price}</span>
+                            <button onclick="globalRemoveItemFromBag(${index})" class="text-slate-500 hover:text-rose-400 transition-colors cursor-pointer"><i class="fa-solid fa-trash-can text-[10px]"></i></button>
+                        </div>
+                    `;
+                    cartItemsList.appendChild(row);
+                });
+
+                grossTotalLabel.textContent = `KSh ${accumulatedPriceSum.toLocaleString()}`;
+            }
+
+            window.globalRemoveItemFromBag = function(index) {
+                internalShoppingBag.splice(index, 1);
+                recalculateGrossOrderMatrix();
+            };
+
+            clearBagBtn.addEventListener("click", () => {
+                internalShoppingBag = [];
+                recalculateGrossOrderMatrix();
+            });
+
+            // --- CONVERSATIONAL BRAIN LOGIC ---
+            function appendCustomerMessageToStream(text) {
+                const bubble = document.createElement("div");
+                bubble.className = "flex items-start gap-3 max-w-[85%] ml-auto flex-row-reverse";
+                bubble.innerHTML = `
+                    <div class="bg-indigo-600 p-2 rounded-xl text-white flex-shrink-0 mt-0.5 shadow-md"><i class="fa-solid fa-user text-xs"></i></div>
+                    <div class="bg-indigo-500/10 text-slate-100 border border-indigo-500/20 rounded-2xl rounded-tr-none p-3 text-xs sm:text-sm shadow-sm">${text}</div>
+                `;
+                msgStream.appendChild(bubble);
+                msgStream.scrollTop = msgStream.scrollHeight;
+            }
+
+            function appendBotMessageToStream(text) {
+                const bubble = document.createElement("div");
+                bubble.className = "flex items-start gap-3 max-w-[85%]";
+                bubble.innerHTML = `
+                    <div class="bg-slate-800 p-2 rounded-xl text-cyan-400 flex-shrink-0 mt-0.5 shadow-md"><i class="fa-solid fa-brain text-xs"></i></div>
+                    <div class="bg-slate-900/80 text-slate-200 border border-white/5 rounded-2xl rounded-tl-none p-3 text-xs sm:text-sm shadow-inner leading-relaxed">${text}</div>
+                `;
+                msgStream.appendChild(bubble);
+                msgStream.scrollTop = msgStream.scrollHeight;
+            }
+
+            function processCustomerIntent(rawQueryText) {
+                const query = rawQueryText.toLowerCase().trim();
+                let matchingProductsResult = [];
+
+                // Parsing Intent Structures Using Lightweight Keyword Filter Matrices
+                if (query.includes("menu") || query.includes("show all") || query.includes("everything") || query.includes("catalog")) {
+                    matchingProductsResult = activeMerchantConfig.itemsArray;
+                    appendBotMessageToStream(`✨ Here is our complete collection! Explore the dynamic display portal on your right to choose your preferred option.`);
+                } 
+                else if (query.includes("under") || query.includes("below") || query.includes("budget") || query.includes("price")) {
+                    // Extract numerical constraints using regex matching sequences
+                    const extractedNumbers = query.match(/\d+/g);
+                    if (extractedNumbers && extractedNumbers.length > 0) {
+                        const ceilingLimit = parseInt(extractedNumbers[0]) * (extractedNumbers[0] < 100 ? 1000 : 1); // Handles '5k' or '5000'
+                        matchingProductsResult = activeMerchantConfig.itemsArray.filter(i => i.price <= ceilingLimit);
+                        appendBotMessageToStream(`💰 I filtered out premium items priced completely below **KSh ${ceilingLimit.toLocaleString()}** for you.`);
+                    } else {
+                        matchingProductsResult = activeMerchantConfig.itemsArray;
+                        appendBotMessageToStream(`Let me help you sort items by price. Specify an amount like: *"Show me options under 4k"*!`);
+                    }
+                } 
+                else if (query.includes("delivery") || query.includes("route") || query.includes("ship")) {
+                    appendBotMessageToStream(`🚚 **Logistics Matrix Parameters:** Our primary distribution channels operate across: *${activeMerchantConfig.deliveryMatrix}*.`);
+                    return;
+                }
+                else {
+                    // Fallback to strict keyword text evaluation across titles & descriptive nodes
+                    matchingProductsResult = activeMerchantConfig.itemsArray.filter(item => 
+                        item.name.toLowerCase().includes(query) || 
+                        item.description.toLowerCase().includes(query) ||
+                        item.id.toLowerCase().includes(query)
+                    );
+
+                    if (matchingProductsResult.length > 0) {
+                        appendBotMessageToStream(`👟 I isolated **${matchingProductsResult.length} options** that directly map onto your specific inventory parameter query! Check them out on the interactive panel.`);
+                    } else {
+                        appendBotMessageToStream(`🤔 I couldn't find an exact match for that keyword. Here are some of our general trending options you might appreciate!`);
+                        matchingProductsResult = activeMerchantConfig.itemsArray.slice(0, 2);
+                    }
+                }
+
+                renderItemsToDisplayPortal(matchingProductsResult);
+            }
+
+            // Central Chat Dispatch Triggers
+            function handleUserMessageSubmission() {
+                const message = inputField.value.trim();
+                if(message === "") return;
+
+                appendCustomerMessageToStream(message);
+                inputField.value = "";
+
+                // Artificial Intelligence Response Parsing Delay Tick
+                setTimeout(() => {
+                    processCustomerIntent(message);
+                }, 600);
+            }
+
+            sendBtn.addEventListener("click", handleUserMessageSubmission);
+            inputField.addEventListener("keypress", (e) => { if(e.key === "Enter") handleUserMessageSubmission(); });
+
+            // Interactive Quick Reply Chips Routing Mapping
+            chipTriggers.forEach(chip => {
+                chip.addEventListener("click", () => {
+                    const cleanText = chip.textContent.replace(/^[^\s]+\s/, ""); // Strips emoji prefixes away
+                    appendCustomerMessageToStream(cleanText);
+                    setTimeout(() => processCustomerIntent(cleanText), 500);
+                });
+            });
+
+            clearChatBtn.addEventListener("click", () => {
+                msgStream.innerHTML = "";
+                appendBotMessageToStream("Stream parameters refreshed. Ask me about products, pricing, or shipping tracks!");
+            });
+
+            // --- HIGH-CONVERSION WHATSAPP CONVERSION DISPATCH PROTOCOL ---
+            finalizeOrderBtn.addEventListener("click", () => {
+                const name = document.getElementById("cust-name").value.trim();
+                const phone = document.getElementById("cust-phone").value.trim();
+                const location = document.getElementById("cust-location").value.trim();
+
+                if (internalShoppingBag.length === 0) {
+                    alert("Your order summary contains no inventory items. Stage products before completing checkout.");
+                    return;
+                }
+                if (!name || !phone || !location) {
+                    alert("Please fill in your explicit Logistics Coordinates (Name, Phone, and Location) to generate a valid invoice bridge.");
+                    return;
+                }
+
+                // Compile items string mapping values
+                let orderItemsTextDump = "";
+                let totalBillCounter = 0;
+                internalShoppingBag.forEach((item, index) => {
+                    totalBillCounter += item.price;
+                    orderItemsTextDump += `${index + 1}️⃣ ${item.name} [${item.id}] - KSh ${item.price.toLocaleString()}\n`;
+                });
+
+                // 10/10 EXQUISITE HIGH-CONVERSION TEXT TEMPLATE COMPILATION
+                const whatsappInvoicePayload = 
+`🧾 *CYMOR AI AUTOMATED INVOICE*
+----------------------------------------
+🚨 *NEW ORDER DETECTED*
+
+👤 *CUSTOMER LOGISTICS DATA:*
+• *Name:* ${name}
+• *Phone Link:* ${phone}
+• *Delivery Target:* ${location}
+
+📦 *STAGED INVENTORY ARRAYS:*
+${orderItemsTextDump}
+💰 *TOTAL SUM PAYABLE:* KSh ${totalBillCounter.toLocaleString()}
+----------------------------------------
+💳 *MERCHANT SETTLEMENT TRACKS:*
+${activeMerchantConfig.paymentGateways}
+
+*Thank you for selecting ${activeMerchantConfig.businessName}! Our AI has prioritized your processing channel. Please click send to lock in delivery instructions.*`;
+
+                // URL Encode the block for clean browser redirect parsing
+                const encryptedPayloadString = encodeURIComponent(whatsappInvoicePayload);
+                const targetedMerchantPhone = activeMerchantConfig.whatsappNumber;
+
+                // Fire direct window bridge to open communication natively
+                window.open(`https://wa.me/${targetedMerchantPhone}?text=${encryptedPayloadString}`, '_blank');
+            });
+
+            // Initialize display portal loop with initial products list
+            renderItemsToDisplayPortal(activeMerchantConfig.itemsArray);
+        });
+    </script>
+      <!-- ⚙️ COMPACT PERSUASION REASONING & RUNTIME SCRIPT NODE -->
+    <script type="module" src="./ai-engine.js"></script>
+</body>
+</html>
+
+
+    
