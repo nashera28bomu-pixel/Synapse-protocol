@@ -3,363 +3,175 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Workspace Deployment Wizard — Cymor Commerce</title>
-    <!-- Tailwind CSS CDN -->
+    <title>AI Workspace Deployment — Cymor Commerce</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- Google Fonts & FontAwesome -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-        }
-        .glassmorphism {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        .glass-terminal {
-            background: rgba(15, 23, 42, 0.75);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        /* Smooth transitions for dynamic steps */
-        .step-transition {
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); }
+        .glassmorphism { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .glass-terminal { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .input-tray { min-height: 80px; display: flex; align-items: center; }
         .scrollbar-none::-webkit-scrollbar { display: none; }
-        .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="text-slate-100 min-h-screen flex flex-col justify-between antialiased">
+<body class="text-slate-100 min-h-screen flex flex-col antialiased">
 
-    <!-- 🟢 NAVIGATION HEADER -->
     <header class="w-full px-6 py-4 flex justify-between items-center glassmorphism shadow-lg">
-        <div class="flex items-center gap-3 group">
-            <div class="bg-gradient-to-tr from-cyan-500 to-indigo-500 p-2.5 rounded-xl shadow-md">
-                <i class="fa-solid fa-robot text-xl text-white"></i>
+        <div class="flex items-center gap-3">
+            <div class="bg-gradient-to-tr from-cyan-500 to-indigo-500 p-2.5 rounded-xl shadow-lg">
+                <i class="fa-solid fa-microchip text-xl text-white"></i>
             </div>
             <div>
-                <h1 class="font-bold text-xl tracking-tight text-white">Cymor Core AI</h1>
-                <p class="text-xs text-cyan-400 font-medium tracking-wide">SYSTEM INITIALIZATION MODULE</p>
+                <h1 class="font-bold text-lg text-white">Cymor Core AI</h1>
+                <p class="text-[10px] text-cyan-400 font-black tracking-widest">SYSTEM INITIALIZATION</p>
             </div>
         </div>
-        <div class="flex items-center gap-3 bg-slate-900/60 border border-white/5 px-4 py-2 rounded-xl">
-            <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-            <span id="merchant-welcome" class="text-xs font-semibold text-slate-300">Loading Session...</span>
+        <div id="session-badge" class="hidden sm:flex items-center gap-2 bg-slate-900/80 border border-white/10 px-4 py-2 rounded-xl">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span id="merchant-name" class="text-xs font-bold text-slate-300">...</span>
         </div>
     </header>
 
-    <!-- 🤖 INTERACTIVE AI ONBOARDING WIZARD TERMINAL -->
-    <main class="w-full max-w-3xl mx-auto px-6 py-12 flex-1 flex flex-col justify-center">
-        <div class="glass-terminal rounded-2xl border border-white/10 shadow-2xl overflow-hidden flex flex-col min-h-[580px]">
+    <main class="flex-1 w-full max-w-3xl mx-auto px-6 py-12 flex flex-col justify-center">
+        <div class="glass-terminal rounded-3xl border border-white/10 shadow-2xl overflow-hidden flex flex-col min-h-[600px]">
             
-            <!-- System Top Progress Performance Meter -->
-            <div class="bg-slate-950/60 border-b border-white/5 p-4 flex items-center justify-between">
-                <div class="flex items-center gap-2 text-xs font-mono text-slate-400">
-                    <span class="text-cyan-400">⚡ INFRASTRUCTURE BUILDER</span>
-                    <span>|</span>
-                    <span id="terminal-step-indicator">Question 1 of 6</span>
+            <div class="bg-slate-950/40 p-5 flex items-center justify-between border-b border-white/5">
+                <div class="flex items-center gap-3">
+                    <span id="step-count" class="text-[10px] font-black text-cyan-400 bg-cyan-400/10 px-3 py-1 rounded-full border border-cyan-400/20 uppercase tracking-tighter">Question 1 of 6</span>
                 </div>
-                <div class="w-32 bg-slate-800 h-2 rounded-full overflow-hidden border border-white/5">
-                    <div id="progress-bar-fill" class="bg-gradient-to-r from-cyan-400 to-indigo-500 h-full w-[16.6%] transition-all duration-500"></div>
+                <div class="w-40 bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                    <div id="progress-bar" class="bg-gradient-to-r from-cyan-400 to-indigo-500 h-full w-[16%] transition-all duration-700"></div>
                 </div>
             </div>
 
-            <!-- Main Conversation Screen Frame -->
-            <div id="terminal-body" class="flex-1 p-6 sm:p-8 space-y-6 overflow-y-auto max-h-[400px]">
-                
-                <!-- AI Conversational Bubble -->
-                <div class="flex items-start gap-3.5 step-transition opacity-100 transform translate-y-0" id="ai-chat-bubble">
-                    <div class="bg-gradient-to-tr from-cyan-500 to-indigo-500 p-2.5 rounded-xl text-white flex-shrink-0 shadow-md">
-                        <i class="fa-solid fa-brain text-sm"></i>
+            <div id="chat-container" class="flex-1 p-8 space-y-8 overflow-y-auto max-h-[420px] scrollbar-none">
+                <div class="flex items-start gap-4" id="ai-bubble-wrap">
+                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center text-white shadow-lg flex-shrink-0">
+                        <i class="fa-solid fa-robot"></i>
                     </div>
-                    <div class="bg-slate-900/60 border border-white/5 p-4 rounded-2xl rounded-tl-none space-y-3 shadow-inner max-w-[85%]">
-                        <p id="ai-question-text" class="text-sm md:text-base leading-relaxed font-medium text-slate-100">
-                            Greetings! I am the Cymor Deployment Engine. Let's initialize your store variables. First: **What is your official business name?**
-                        </p>
+                    <div class="bg-slate-800/40 border border-white/10 p-5 rounded-3xl rounded-tl-none max-w-[85%] shadow-xl">
+                        <p id="ai-text" class="text-sm md:text-base leading-relaxed font-medium">Initializing... **What is your Business Name?**</p>
                     </div>
                 </div>
 
-                <!-- Live Collected Metadata Log Matrix -->
-                <div id="system-log" class="hidden border border-cyan-500/10 bg-cyan-500/5 p-3.5 rounded-xl text-[11px] font-mono text-cyan-400 space-y-1">
-                    <p class="text-white font-bold tracking-wider uppercase text-[10px] pb-1 border-b border-cyan-500/10">SYSTEM METADATA CONFIGURATION LOG:</p>
-                    <div id="log-entries" class="space-y-0.5"></div>
-                </div>
-            </div>
-
-            <!-- Dynamic Input Execution Base Tray -->
-            <div class="p-4 bg-slate-950/40 border-t border-white/5 space-y-4">
-                
-                <!-- STEP 1-5 CONTAINER: Text and Data Fields -->
-                <div id="standard-input-wrapper" class="flex items-center gap-3">
-                    <input type="text" id="wizard-text-input" placeholder="Enter business parameter response..." class="flex-1 bg-slate-900/80 border border-white/10 rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:border-cyan-500 text-slate-100 placeholder-slate-600 transition-colors">
-                    <button id="next-step-btn" class="bg-gradient-to-tr from-cyan-500 to-indigo-500 hover:from-cyan-400 hover:to-indigo-400 transition-all text-white px-5 py-3.5 rounded-xl cursor-pointer shadow-md font-bold flex items-center gap-2 text-sm">
-                        Continue <i class="fa-solid fa-chevron-right text-xs"></i>
-                    </button>
-                </div>
-
-                <!-- STEP 6 CONTAINER: INVENTORY INGESTION SYSTEM -->
-                <div id="inventory-input-wrapper" class="hidden space-y-4 animate-fadeIn">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- Left Panel: Manual Product Grid Additions -->
-                        <div class="bg-slate-900/40 border border-white/5 p-4 rounded-xl space-y-3 text-left">
-                            <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-                                <i class="fa-solid fa-plus text-cyan-400"></i> Option A: Add Items Manually
-                            </h4>
-                            <div class="grid grid-cols-3 gap-2">
-                                <input type="text" id="prod-code" placeholder="Code (e.g. CS01)" class="col-span-1 bg-slate-900 border border-white/5 rounded-lg p-2 text-xs text-white">
-                                <input type="text" id="prod-name" placeholder="Product Name" class="col-span-2 bg-slate-900 border border-white/5 rounded-lg p-2 text-xs text-white">
-                            </div>
-                            <div class="grid grid-cols-3 gap-2">
-                                <input type="number" id="prod-price" placeholder="Price (KSh)" class="col-span-1 bg-slate-900 border border-white/5 rounded-lg p-2 text-xs text-white">
-                                <input type="text" id="prod-desc" placeholder="Brief Description" class="col-span-2 bg-slate-900 border border-white/5 rounded-lg p-2 text-xs text-white">
-                            </div>
-                            <button type="button" id="add-item-btn" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 border border-white/10 font-bold py-2 rounded-lg text-xs transition-colors cursor-pointer">
-                                + Add to Store Catalog Inventory
+                <div id="success-result" class="hidden space-y-6 animate-in fade-in zoom-in duration-500">
+                    <div class="bg-emerald-500/10 border border-emerald-500/20 p-6 rounded-3xl text-center space-y-4">
+                        <div class="w-16 h-16 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto text-2xl">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </div>
+                        <h3 class="text-xl font-black text-white">Store Environment Live!</h3>
+                        <div class="flex items-center gap-2 bg-slate-950/80 p-4 rounded-2xl border border-white/10">
+                            <code id="final-url" class="flex-1 text-cyan-400 font-mono text-sm overflow-hidden text-ellipsis whitespace-nowrap">cymor.ai/shop/loading...</code>
+                            <button id="copy-link-btn" class="bg-cyan-500 hover:bg-cyan-400 text-slate-900 px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-2 cursor-pointer">
+                                <i class="fa-solid fa-copy"></i> COPY
                             </button>
                         </div>
-
-                        <!-- Right Panel: Spreadsheets and File Drops -->
-                        <div class="bg-slate-900/40 border border-white/5 p-4 rounded-xl flex flex-col justify-between text-left">
-                            <div class="space-y-1.5">
-                                <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-                                    <i class="fa-solid fa-file-excel text-emerald-400"></i> Option B: Batch Upload Files
-                                </h4>
-                                <p class="text-[11px] text-slate-500">Upload item spreadsheets, CSV formats, or inventory images.</p>
-                            </div>
-                            <label class="w-full border border-dashed border-white/10 hover:border-cyan-500/50 bg-slate-900/60 p-4 rounded-lg flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors group">
-                                <i class="fa-solid fa-cloud-arrow-up text-xl text-slate-500 group-hover:text-cyan-400 transition-colors"></i>
-                                <span class="text-[11px] text-slate-400" id="file-upload-label">Select spreadsheet or catalog files</span>
-                                <input type="file" id="catalog-file" class="hidden" accept=".csv,.xlsx,.json,image/*" multiple>
-                            </label>
-                        </div>
                     </div>
+                    <button onclick="window.location.href='index.html'" class="w-full bg-white/5 hover:bg-white/10 border border-white/10 py-4 rounded-2xl text-sm font-bold transition-all">Return to Dashboard</button>
+                </div>
+            </div>
 
-                    <!-- Visual Inventory Summary Feed Tray -->
-                    <div class="bg-slate-950/80 rounded-xl p-3 border border-white/5 max-h-[100px] overflow-y-auto scrollbar-none">
-                        <p class="text-[10px] font-mono text-slate-500 uppercase tracking-wider mb-1">Staged Store Items Array (<span id="items-count">0</span> items)</p>
-                        <div id="staged-items-container" class="flex flex-wrap gap-2"></div>
-                    </div>
-
-                    <!-- Final Infrastructure Link Generation Activation Key -->
-                    <button id="generate-link-btn" class="w-full bg-gradient-to-r from-cyan-500 via-indigo-500 to-purple-600 hover:scale-[1.005] transition-all text-white font-extrabold py-4 rounded-xl shadow-xl shadow-indigo-500/20 flex items-center justify-center gap-3 cursor-pointer text-sm tracking-wide">
-                        <i class="fa-solid fa-wand-magic-sparkles animate-pulse"></i> GENERATE STORE ENVIRONMENT LINK
+            <div class="p-6 bg-slate-950/60 border-t border-white/5">
+                <div id="input-group" class="input-tray gap-3">
+                    <input type="text" id="user-input" placeholder="Type here..." class="flex-1 bg-slate-900/80 border border-white/10 rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-cyan-500 transition-all text-white">
+                    <button id="submit-btn" class="bg-gradient-to-tr from-cyan-500 to-indigo-500 hover:scale-[1.05] transition-all text-white w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg cursor-pointer flex-shrink-0">
+                        <i class="fa-solid fa-paper-plane"></i>
                     </button>
+                </div>
+
+                <div id="inventory-group" class="hidden space-y-4 pt-2">
+                    <div class="grid grid-cols-2 gap-3">
+                        <button id="add-manual" class="bg-slate-800 border border-white/10 p-4 rounded-2xl text-xs font-bold hover:bg-slate-700 transition-all"><i class="fa-solid fa-plus mr-2 text-cyan-400"></i> Manual Item</button>
+                        <label class="bg-slate-800 border border-white/10 p-4 rounded-2xl text-xs font-bold hover:bg-slate-700 transition-all text-center cursor-pointer">
+                            <i class="fa-solid fa-file-csv mr-2 text-emerald-400"></i> CSV Upload
+                            <input type="file" id="csv-input" class="hidden">
+                        </label>
+                    </div>
+                    <button id="finalize-btn" class="w-full bg-gradient-to-r from-cyan-500 via-indigo-600 to-purple-600 py-5 rounded-2xl text-sm font-black uppercase tracking-widest shadow-xl shadow-indigo-500/20 cursor-pointer">Generate Live Store Link</button>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- 💳 PLATFORM RUNTIME FOOTER -->
-    <footer class="w-full border-t border-white/5 bg-slate-950/40 px-6 py-4 text-center text-xs text-slate-600">
-        <p>&copy; 2026 CymorTechServices. Built by Legendary Smiley Cymor.</p>
+    <footer class="p-6 text-center text-[10px] text-slate-600 font-bold uppercase tracking-[0.2em]">
+        &copy; 2026 CymorTechServices &bull; Built by Legendary Smiley Cymor
     </footer>
 
-    <!-- Interactive AI Form Protocol Script Logic Module -->
-    <script type="module">
-        import { saveMerchantStoreConfiguration } from "./firebase-config.js";
-
+    <script>
         document.addEventListener("DOMContentLoaded", () => {
-            // Read and mount current session user profile
-            const currentUser = JSON.parse(localStorage.getItem("cymor_merchant_user"));
-            if (!currentUser) {
-                // If no user context detected, force redirect back to entry register frame
-                window.location.href = "register.html";
-                return;
-            }
-            document.getElementById("merchant-welcome").textContent = `Active User: ${currentUser.name}`;
+            const user = JSON.parse(localStorage.getItem("cymor_merchant_user"));
+            if(!user) { window.location.href = "register.html"; return; }
+            document.getElementById("merchant-name").textContent = user.name;
 
-            // Core Interactive Configuration State Parameters
-            let currentStep = 1;
-            const totalSteps = 6;
-            
-            // Structured Object Store to aggregate business settings
-            const merchantDataMetadata = {
-                businessName: "",
-                whatsappNumber: "",
-                description: "",
-                menuLayout: "",
-                paymentGateways: "",
-                deliveryMatrix: "",
-                itemsArray: []
-            };
+            let step = 1;
+            const data = { items: [] };
+            const questions = [
+                "**What is your complete Business Name?**",
+                "Enter your **WhatsApp Number** (with country code, e.g., 254...)",
+                "Write a short **Business Description** for the AI.",
+                "List your **Categories** (e.g. Shoes, Tech, Clothes)",
+                "Enter **Payment/Delivery Instructions** (e.g. Lipa na Mpesa Till 123)",
+                "Almost there! Now **add your products** to finish."
+            ];
 
-            // Conversational Roadmap Questions Definition Matrix
-            const stepsMap = {
-                1: { question: "Excellent! Let's build your architecture. First: **What is your complete Business Name?**", dataKey: "businessName", placeholder: "e.g., Slick Kicks Kenya" },
-                2: { question: "Perfect. Next, what is your **Official Business WhatsApp Number**? (Include country code without special characters)", dataKey: "whatsappNumber", placeholder: "e.g., 254113821327" },
-                3: { question: "Understood. Give me a brief, compelling **Description of your business** so my AI understands exactly what you market.", dataKey: "description", placeholder: "e.g., Premium vendor for high-end streetwear and retro sneakers in Nairobi." },
-                4: { question: "Got it. How do you want your **Store Menu Layout / Categories** structured? Separate items with commas.", dataKey: "menuLayout", placeholder: "e.g., Retro Jordans, Running Shoes, Slides, Hoodies" },
-                5: { question: "Excellent. Now, define your **Payment Instructions & Delivery Matrix Routes** so checkout processing goes smoothly.", dataKey: "paymentGateways", placeholder: "e.g., Lipa na M-Pesa Till 123456 | Delivery across Nairobi CBD via riders" },
-                6: { question: "Fantastic! All corporate metadata parameters are mapped into system configs. Finally, **stage your items catalog inventory below**. You can input individual products manually or drop your spreadsheets directly!", dataKey: "itemsArray" }
-            };
+            const aiText = document.getElementById("ai-text");
+            const userInput = document.getElementById("user-input");
+            const submitBtn = document.getElementById("submit-btn");
+            const progressBar = document.getElementById("progress-bar");
+            const stepCount = document.getElementById("step-count");
 
-            // DOM Selectors
-            const aiBubble = document.getElementById("ai-chat-bubble");
-            const aiText = document.getElementById("ai-question-text");
-            const textInput = document.getElementById("wizard-text-input");
-            const nextBtn = document.getElementById("next-step-btn");
-            const standardInputWrapper = document.getElementById("standard-input-wrapper");
-            const inventoryInputWrapper = document.getElementById("inventory-input-wrapper");
-            const stepIndicator = document.getElementById("terminal-step-indicator");
-            const progressBarFill = document.getElementById("progress-bar-fill");
-            const systemLog = document.getElementById("system-log");
-            const logEntries = document.getElementById("log-entries");
-            
-            // Manual Product Item Fields Selectors
-            const pCode = document.getElementById("prod-code");
-            const pName = document.getElementById("prod-name");
-            const pPrice = document.getElementById("prod-price");
-            const pDesc = document.getElementById("prod-desc");
-            const addItemBtn = document.getElementById("add-item-btn");
-            const itemsCountLabel = document.getElementById("items-count");
-            const stagedContainer = document.getElementById("staged-items-container");
-            const fileUploadInput = document.getElementById("catalog-file");
-            const fileUploadLabel = document.getElementById("file-upload-label");
-            const generateLinkBtn = document.getElementById("generate-link-btn");
+            function nextStep() {
+                const val = userInput.value.trim();
+                if(!val && step < 6) return;
 
-            // Event Hooks for Form Processing
-            nextBtn.addEventListener("click", processStepProgress);
-            textInput.addEventListener("keypress", (e) => { if(e.key === "Enter") processStepProgress(); });
+                // Save data
+                if(step === 1) data.name = val;
+                if(step === 2) data.phone = val;
 
-            function processStepProgress() {
-                const inputValue = textInput.value.trim();
-                
-                if (inputValue === "" && currentStep < 6) {
-                    textInput.classList.add("border-rose-500");
-                    setTimeout(() => textInput.classList.remove("border-rose-500"), 500);
-                    return;
+                step++;
+                if(step <= 6) {
+                    userInput.value = "";
+                    aiText.innerHTML = questions[step-1];
+                    stepCount.textContent = `Question ${step} of 6`;
+                    progressBar.style.width = `${(step/6)*100}%`;
+
+                    if(step === 6) {
+                        document.getElementById("input-group").classList.add("hidden");
+                        document.getElementById("inventory-group").classList.remove("hidden");
+                    }
                 }
+            }
 
-                // Map input value to metadata store tracking structures
-                const dataKey = stepsMap[currentStep].dataKey;
-                merchantDataMetadata[dataKey] = inputValue;
+            submitBtn.addEventListener("click", nextStep);
+            userInput.addEventListener("keypress", (e) => e.key === "Enter" && nextStep());
 
-                // Push visual feedback block to system configuration telemetry matrix logs
-                systemLog.classList.remove("hidden");
-                const newLog = document.createElement("p");
-                newLog.innerHTML = `<span class="text-white">&gt; config.${dataKey}:</span> "${inputValue}" mapped successfully.`;
-                logEntries.appendChild(newLog);
-
-                // Increment Sequence Step Tracking Numbers
-                currentStep++;
-
-                // Animate structural elements smoothly between changes
-                aiBubble.classList.add("opacity-0", "translate-y-2");
+            document.getElementById("finalize-btn").addEventListener("click", () => {
+                // Generate Real Slug
+                const slug = data.name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+                const finalUrl = `cymor.ai/shop/${slug}`;
                 
+                // Update LocalStorage
+                user.storeLink = slug;
+                user.storeUrl = finalUrl;
+                localStorage.setItem("cymor_merchant_user", JSON.stringify(user));
+
+                // UI Transition
+                document.getElementById("ai-bubble-wrap").classList.add("hidden");
+                document.getElementById("inventory-group").classList.add("hidden");
+                document.getElementById("success-result").classList.remove("hidden");
+                document.getElementById("final-url").textContent = finalUrl;
+            });
+
+            document.getElementById("copy-link-btn").addEventListener("click", function() {
+                const url = document.getElementById("final-url").textContent;
+                navigator.clipboard.writeText(url);
+                this.innerHTML = `<i class="fa-solid fa-check"></i> COPIED!`;
+                this.classList.replace("bg-cyan-500", "bg-emerald-500");
                 setTimeout(() => {
-                    if (currentStep <= totalSteps) {
-                        // Update Progress Fill Variables
-                        const pct = (currentStep / totalSteps) * 100;
-                        progressBarFill.style.width = `${pct}%`;
-                        stepIndicator.textContent = `Question ${currentStep} of ${totalSteps}`;
-                        
-                        // Swap question text strings
-                        aiText.innerHTML = stepsMap[currentStep].question;
-                        textInput.value = "";
-                        if (stepsMap[currentStep].placeholder) {
-                            textInput.placeholder = stepsMap[currentStep].placeholder;
-                        }
-
-                        // Switch to complete inventory layout once metadata is processed
-                        if (currentStep === 6) {
-                            standardInputWrapper.classList.add("hidden");
-                            inventoryInputWrapper.classList.remove("hidden");
-                        }
-
-                        aiBubble.classList.remove("opacity-0", "translate-y-2");
-                    }
-                }, 350);
-            }
-
-            // --- MANUAL INVENTORY INGESTION ENGINE ---
-            addItemBtn.addEventListener("click", () => {
-                const code = pCode.value.trim().toUpperCase() || "CS" + String(merchantDataMetadata.itemsArray.length + 1).padStart(2, '0');
-                const name = pName.value.trim();
-                const price = pPrice.value.trim();
-                const desc = pDesc.value.trim() || "Premium custom selection item.";
-
-                if (!name || !price) {
-                    alert("Product Name and Price criteria tokens must be provided to allocate inventory.");
-                    return;
-                }
-
-                const itemObj = { id: code, name: name, price: parseFloat(price), description: desc };
-                merchantDataMetadata.itemsArray.push(itemObj);
-
-                // Render Item Badge Indicator
-                const badge = document.createElement("span");
-                badge.className = "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-[10px] font-mono px-2.5 py-1 rounded-md flex items-center gap-1.5";
-                badge.innerHTML = `<strong>${code}</strong>: ${name} (KSh ${price})`;
-                stagedContainer.appendChild(badge);
-
-                // Reset inputs fields
-                pCode.value = ""; pName.value = ""; pPrice.value = ""; pDesc.value = "";
-                itemsCountLabel.textContent = merchantDataMetadata.itemsArray.length;
-            });
-
-            // --- BULK SPREADSHEET MONITOR LOOPS ---
-            fileUploadInput.addEventListener("change", (e) => {
-                if(e.target.files.length > 0) {
-                    const count = e.target.files.length;
-                    fileUploadLabel.textContent = `Successfully staged (${count}) file structural matrices.`;
-                    fileUploadLabel.classList.remove("text-slate-400");
-                    fileUploadLabel.classList.add("text-emerald-400", "font-bold");
-
-                    for (let i = 1; i <= 3; i++) {
-                        const mockItem = {
-                            id: "CS0" + (merchantDataMetadata.itemsArray.length + 1),
-                            name: "Bulk Staged Item " + i,
-                            price: 3500 + (i * 500),
-                            description: "Automated batch processing pipeline asset injection."
-                        };
-                        merchantDataMetadata.itemsArray.push(mockItem);
-                        const badge = document.createElement("span");
-                        badge.className = "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-mono px-2.5 py-1 rounded-md";
-                        badge.innerHTML = `<strong>${mockItem.id}</strong>: ${mockItem.name}`;
-                        stagedContainer.appendChild(badge);
-                    }
-                    itemsCountLabel.textContent = merchantDataMetadata.itemsArray.length;
-                }
-            });
-
-            // --- LIVE CLOUD ENVIRONMENT COMPILATION MATRIX ---
-            generateLinkBtn.addEventListener("click", async () => {
-                if (merchantDataMetadata.itemsArray.length === 0) {
-                    alert("Please register at least 1 product item asset inside the catalog matrix before establishing environment pathways.");
-                    return;
-                }
-
-                try {
-                    // Visual state shifting into compilation sequence 
-                    generateLinkBtn.disabled = true;
-                    generateLinkBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> STRUCTURING CLOUD INSTANCE...`;
-                    inventoryInputWrapper.classList.add("hidden");
-                    aiText.innerHTML = `🚀 **Deploying Configurations to Live Infrastructure...** Synchronizing workspace metadata payload to Google Firestore and mapping link pathways. Do not close this panel.`;
-
-                    // Push metadata map onto global cloud shards for free
-                    const result = await saveMerchantStoreConfiguration(currentUser.uid, merchantDataMetadata);
-
-                    // Sync parameters back into active user local state storage indices
-                    currentUser.storeLink = result.slug;
-                    localStorage.setItem("cymor_merchant_user", JSON.stringify(currentUser));
-
-                    aiText.innerHTML = `🎉 **Deployment Terminated Successfully!** Your custom autonomous 24/7 AI shopping storefront has materialized live. Routing to your workspace hub environment...`;
-
-                    setTimeout(() => {
-                        window.location.href = `ai-chat.html?store=${result.slug}`;
-                    }, 2000);
-
-                } catch (error) {
-                    console.error("Cloud Deployment Exception Matrix Raised:", error);
-                    alert("System configuration failed to compile: " + error.message);
-                    generateLinkBtn.disabled = false;
-                    generateLinkBtn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> RE-TRY WORKSPACE GENERATION`;
-                    inventoryInputWrapper.classList.remove("hidden");
-                }
+                    this.innerHTML = `<i class="fa-solid fa-copy"></i> COPY`;
+                    this.classList.replace("bg-emerald-500", "bg-cyan-500");
+                }, 2000);
             });
         });
     </script>
