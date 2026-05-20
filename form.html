@@ -11,8 +11,9 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); }
         .glassmorphism { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
         .glass-terminal { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .input-tray { min-height: 80px; display: flex; align-items: center; }
         .scrollbar-none::-webkit-scrollbar { display: none; }
+        .animate-slide-up { animation: slideUp 0.4s ease-out; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="text-slate-100 min-h-screen flex flex-col antialiased">
@@ -24,75 +25,93 @@
             </div>
             <div>
                 <h1 class="font-bold text-lg text-white">Cymor Core AI</h1>
-                <p class="text-[10px] text-cyan-400 font-black tracking-widest">SYSTEM INITIALIZATION</p>
+                <p class="text-[10px] text-cyan-400 font-black tracking-widest uppercase">Deployment Module</p>
             </div>
         </div>
-        <div id="session-badge" class="hidden sm:flex items-center gap-2 bg-slate-900/80 border border-white/10 px-4 py-2 rounded-xl">
+        <div id="session-badge" class="flex items-center gap-2 bg-slate-900/80 border border-white/10 px-4 py-2 rounded-xl">
             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
             <span id="merchant-name" class="text-xs font-bold text-slate-300">...</span>
         </div>
     </header>
 
-    <main class="flex-1 w-full max-w-3xl mx-auto px-6 py-12 flex flex-col justify-center">
-        <div class="glass-terminal rounded-3xl border border-white/10 shadow-2xl overflow-hidden flex flex-col min-h-[600px]">
+    <main class="flex-1 w-full max-w-3xl mx-auto px-6 py-8 flex flex-col justify-center">
+        <div class="glass-terminal rounded-3xl border border-white/10 shadow-2xl overflow-hidden flex flex-col min-h-[620px]">
             
             <div class="bg-slate-950/40 p-5 flex items-center justify-between border-b border-white/5">
-                <div class="flex items-center gap-3">
-                    <span id="step-count" class="text-[10px] font-black text-cyan-400 bg-cyan-400/10 px-3 py-1 rounded-full border border-cyan-400/20 uppercase tracking-tighter">Question 1 of 6</span>
-                </div>
+                <span id="step-count" class="text-[10px] font-black text-cyan-400 bg-cyan-400/10 px-3 py-1 rounded-full border border-cyan-400/20 uppercase">Question 1 of 7</span>
                 <div class="w-40 bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                    <div id="progress-bar" class="bg-gradient-to-r from-cyan-400 to-indigo-500 h-full w-[16%] transition-all duration-700"></div>
+                    <div id="progress-bar" class="bg-gradient-to-r from-cyan-400 to-indigo-500 h-full w-[14%] transition-all duration-700"></div>
                 </div>
             </div>
 
-            <div id="chat-container" class="flex-1 p-8 space-y-8 overflow-y-auto max-h-[420px] scrollbar-none">
-                <div class="flex items-start gap-4" id="ai-bubble-wrap">
+            <div id="chat-container" class="flex-1 p-8 space-y-6 overflow-y-auto max-h-[400px] scrollbar-none">
+                <div class="flex items-start gap-4 animate-slide-up" id="ai-bubble-wrap">
                     <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center text-white shadow-lg flex-shrink-0">
                         <i class="fa-solid fa-robot"></i>
                     </div>
                     <div class="bg-slate-800/40 border border-white/10 p-5 rounded-3xl rounded-tl-none max-w-[85%] shadow-xl">
-                        <p id="ai-text" class="text-sm md:text-base leading-relaxed font-medium">Initializing... **What is your Business Name?**</p>
+                        <p id="ai-text" class="text-sm md:text-base leading-relaxed font-medium">Initializing... **What is your official Business or Company name?**</p>
                     </div>
                 </div>
 
-                <div id="success-result" class="hidden space-y-6 animate-in fade-in zoom-in duration-500">
-                    <div class="bg-emerald-500/10 border border-emerald-500/20 p-6 rounded-3xl text-center space-y-4">
-                        <div class="w-16 h-16 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto text-2xl">
-                            <i class="fa-solid fa-circle-check"></i>
+                <div id="success-result" class="hidden space-y-6 animate-slide-up">
+                    <div class="bg-emerald-500/10 border border-emerald-500/20 p-8 rounded-3xl text-center space-y-4">
+                        <div class="w-20 h-20 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto text-3xl">
+                            <i class="fa-solid fa-rocket"></i>
                         </div>
-                        <h3 class="text-xl font-black text-white">Store Environment Live!</h3>
+                        <h3 class="text-2xl font-black text-white">Your Store is Live!</h3>
+                        <p class="text-xs text-slate-400">The link below is now active on the Vercel network.</p>
                         <div class="flex items-center gap-2 bg-slate-950/80 p-4 rounded-2xl border border-white/10">
-                            <code id="final-url" class="flex-1 text-cyan-400 font-mono text-sm overflow-hidden text-ellipsis whitespace-nowrap">cymor.ai/shop/loading...</code>
-                            <button id="copy-link-btn" class="bg-cyan-500 hover:bg-cyan-400 text-slate-900 px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-2 cursor-pointer">
+                            <code id="final-url" class="flex-1 text-cyan-400 font-mono text-xs overflow-hidden text-ellipsis">Loading...</code>
+                            <button id="copy-link-btn" class="bg-cyan-500 hover:bg-cyan-400 text-slate-900 px-4 py-2 rounded-xl text-[10px] font-black transition-all flex items-center gap-2 cursor-pointer">
                                 <i class="fa-solid fa-copy"></i> COPY
                             </button>
                         </div>
+                        <a id="visit-store" href="#" target="_blank" class="block w-full bg-indigo-600 py-4 rounded-2xl text-sm font-bold hover:bg-indigo-500 transition-all">VISIT LIVE STORE</a>
                     </div>
-                    <button onclick="window.location.href='index.html'" class="w-full bg-white/5 hover:bg-white/10 border border-white/10 py-4 rounded-2xl text-sm font-bold transition-all">Return to Dashboard</button>
                 </div>
             </div>
 
             <div class="p-6 bg-slate-950/60 border-t border-white/5">
-                <div id="input-group" class="input-tray gap-3">
-                    <input type="text" id="user-input" placeholder="Type here..." class="flex-1 bg-slate-900/80 border border-white/10 rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-cyan-500 transition-all text-white">
-                    <button id="submit-btn" class="bg-gradient-to-tr from-cyan-500 to-indigo-500 hover:scale-[1.05] transition-all text-white w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg cursor-pointer flex-shrink-0">
+                <div id="input-group" class="flex items-center gap-3">
+                    <input type="text" id="user-input" placeholder="Type your answer..." class="flex-1 bg-slate-900/80 border border-white/10 rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-cyan-500 transition-all text-white">
+                    <button id="submit-btn" class="bg-gradient-to-tr from-cyan-500 to-indigo-500 hover:scale-105 transition-all text-white w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg cursor-pointer flex-shrink-0">
                         <i class="fa-solid fa-paper-plane"></i>
                     </button>
                 </div>
 
                 <div id="inventory-group" class="hidden space-y-4 pt-2">
                     <div class="grid grid-cols-2 gap-3">
-                        <button id="add-manual" class="bg-slate-800 border border-white/10 p-4 rounded-2xl text-xs font-bold hover:bg-slate-700 transition-all"><i class="fa-solid fa-plus mr-2 text-cyan-400"></i> Manual Item</button>
+                        <button id="show-manual-modal" class="bg-slate-800 border border-white/10 p-4 rounded-2xl text-xs font-bold hover:bg-slate-700 transition-all"><i class="fa-solid fa-plus mr-2 text-cyan-400"></i> Manual Product</button>
                         <label class="bg-slate-800 border border-white/10 p-4 rounded-2xl text-xs font-bold hover:bg-slate-700 transition-all text-center cursor-pointer">
-                            <i class="fa-solid fa-file-csv mr-2 text-emerald-400"></i> CSV Upload
-                            <input type="file" id="csv-input" class="hidden">
+                            <i class="fa-solid fa-file-excel mr-2 text-emerald-400"></i> Spreadsheet
+                            <input type="file" id="csv-input" class="hidden" accept=".csv, .xlsx">
                         </label>
                     </div>
-                    <button id="finalize-btn" class="w-full bg-gradient-to-r from-cyan-500 via-indigo-600 to-purple-600 py-5 rounded-2xl text-sm font-black uppercase tracking-widest shadow-xl shadow-indigo-500/20 cursor-pointer">Generate Live Store Link</button>
+                    <div id="items-preview" class="text-[10px] text-slate-500 italic text-center">0 items added to catalog</div>
+                    <button id="finalize-btn" class="w-full bg-gradient-to-r from-cyan-500 via-indigo-600 to-purple-600 py-5 rounded-2xl text-sm font-black uppercase tracking-widest shadow-xl shadow-indigo-500/20 cursor-pointer">Launch Store Environment</button>
                 </div>
             </div>
         </div>
     </main>
+
+    <div id="manual-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm hidden px-6">
+        <div class="bg-slate-900 border border-white/10 w-full max-w-md rounded-3xl p-8 space-y-5">
+            <h4 class="text-lg font-black text-white flex items-center gap-2"><i class="fa-solid fa-tag text-cyan-400"></i> Product Details</h4>
+            <div class="space-y-3">
+                <input type="text" id="p-code" placeholder="Product Code (e.g. SNK-01)" class="w-full bg-slate-800 border border-white/5 rounded-xl p-3 text-sm">
+                <input type="text" id="p-desc" placeholder="Brief Description" class="w-full bg-slate-800 border border-white/5 rounded-xl p-3 text-sm">
+                <div class="grid grid-cols-2 gap-3">
+                    <input type="number" id="p-price" placeholder="Price" class="w-full bg-slate-800 border border-white/5 rounded-xl p-3 text-sm">
+                    <input type="text" id="p-avail" placeholder="Sizes/Colors" class="w-full bg-slate-800 border border-white/5 rounded-xl p-3 text-sm">
+                </div>
+            </div>
+            <div class="flex gap-3">
+                <button id="close-modal" class="flex-1 bg-slate-800 py-3 rounded-xl text-xs font-bold">Cancel</button>
+                <button id="save-product" class="flex-1 bg-cyan-500 text-slate-900 py-3 rounded-xl text-xs font-black">Add to Store</button>
+            </div>
+        </div>
+    </div>
 
     <footer class="p-6 text-center text-[10px] text-slate-600 font-bold uppercase tracking-[0.2em]">
         &copy; 2026 CymorTechServices &bull; Built by Legendary Smiley Cymor
@@ -104,15 +123,17 @@
             if(!user) { window.location.href = "register.html"; return; }
             document.getElementById("merchant-name").textContent = user.name;
 
-            let step = 1;
-            const data = { items: [] };
+            let currentStep = 1;
+            const storeData = { items: [] };
+
             const questions = [
-                "**What is your complete Business Name?**",
-                "Enter your **WhatsApp Number** (with country code, e.g., 254...)",
-                "Write a short **Business Description** for the AI.",
-                "List your **Categories** (e.g. Shoes, Tech, Clothes)",
-                "Enter **Payment/Delivery Instructions** (e.g. Lipa na Mpesa Till 123)",
-                "Almost there! Now **add your products** to finish."
+                "**What is your official Business or Company name?**",
+                "What is your **WhatsApp Business number**? (Include country code, e.g., 254...)",
+                "Describe your business briefly (What do you sell?)",
+                "Choose your **AI Persona**: How should the AI respond? (e.g., Professional, Friendly, Bold)",
+                "Enter **Payment Details**: Provide clear instructions for your customers.",
+                "List your **Delivery Routes**: Include shipping fees for specific areas.",
+                "Finally, add your **Products** manually or via spreadsheet."
             ];
 
             const aiText = document.getElementById("ai-text");
@@ -121,58 +142,82 @@
             const progressBar = document.getElementById("progress-bar");
             const stepCount = document.getElementById("step-count");
 
-            function nextStep() {
+            function handleNext() {
                 const val = userInput.value.trim();
-                if(!val && step < 6) return;
+                if(!val && currentStep < 7) return;
 
-                // Save data
-                if(step === 1) data.name = val;
-                if(step === 2) data.phone = val;
+                // Map data
+                const keys = ["bizName", "phone", "description", "persona", "payment", "delivery"];
+                if(currentStep <= 6) storeData[keys[currentStep-1]] = val;
 
-                step++;
-                if(step <= 6) {
+                currentStep++;
+                if(currentStep <= 7) {
                     userInput.value = "";
-                    aiText.innerHTML = questions[step-1];
-                    stepCount.textContent = `Question ${step} of 6`;
-                    progressBar.style.width = `${(step/6)*100}%`;
+                    aiText.innerHTML = questions[currentStep-1];
+                    stepCount.textContent = `Question ${currentStep} of 7`;
+                    progressBar.style.width = `${(currentStep/7)*100}%`;
 
-                    if(step === 6) {
+                    if(currentStep === 7) {
                         document.getElementById("input-group").classList.add("hidden");
                         document.getElementById("inventory-group").classList.remove("hidden");
                     }
                 }
             }
 
-            submitBtn.addEventListener("click", nextStep);
-            userInput.addEventListener("keypress", (e) => e.key === "Enter" && nextStep());
+            submitBtn.addEventListener("click", handleNext);
+            userInput.addEventListener("keypress", (e) => e.key === "Enter" && handleNext());
 
-            document.getElementById("finalize-btn").addEventListener("click", () => {
-                // Generate Real Slug
-                const slug = data.name.toLowerCase().replace(/[^a-z0-9]/g, '-');
-                const finalUrl = `cymor.ai/shop/${slug}`;
-                
-                // Update LocalStorage
+            // Modal Controls
+            const modal = document.getElementById("manual-modal");
+            document.getElementById("show-manual-modal").onclick = () => modal.classList.remove("hidden");
+            document.getElementById("close-modal").onclick = () => modal.classList.add("hidden");
+
+            document.getElementById("save-product").onclick = () => {
+                const p = {
+                    code: document.getElementById("p-code").value,
+                    desc: document.getElementById("p-desc").value,
+                    price: document.getElementById("p-price").value,
+                    avail: document.getElementById("p-avail").value
+                };
+                if(!p.code || !p.price) return alert("Code and Price are required!");
+                storeData.items.push(p);
+                document.getElementById("items-preview").textContent = `${storeData.items.length} items added to catalog`;
+                modal.classList.add("hidden");
+                // Clear modal
+                document.querySelectorAll("#manual-modal input").forEach(i => i.value = "");
+            };
+
+            // Final Generation
+            document.getElementById("finalize-btn").onclick = () => {
+                const slug = storeData.bizName.toLowerCase().replace(/[^a-z0-9]/g, '-');
+                // GENERATE REAL VERCEL-FRIENDLY LINK
+                const base = window.location.origin; 
+                const finalUrl = `${base}/shop/${slug}`;
+
                 user.storeLink = slug;
-                user.storeUrl = finalUrl;
+                user.fullUrl = finalUrl;
+                user.config = storeData;
                 localStorage.setItem("cymor_merchant_user", JSON.stringify(user));
 
-                // UI Transition
                 document.getElementById("ai-bubble-wrap").classList.add("hidden");
                 document.getElementById("inventory-group").classList.add("hidden");
                 document.getElementById("success-result").classList.remove("hidden");
                 document.getElementById("final-url").textContent = finalUrl;
-            });
+                document.getElementById("visit-store").href = finalUrl;
+            };
 
-            document.getElementById("copy-link-btn").addEventListener("click", function() {
+            // Copy Link
+            document.getElementById("copy-link-btn").onclick = function() {
                 const url = document.getElementById("final-url").textContent;
-                navigator.clipboard.writeText(url);
-                this.innerHTML = `<i class="fa-solid fa-check"></i> COPIED!`;
-                this.classList.replace("bg-cyan-500", "bg-emerald-500");
-                setTimeout(() => {
-                    this.innerHTML = `<i class="fa-solid fa-copy"></i> COPY`;
-                    this.classList.replace("bg-emerald-500", "bg-cyan-500");
-                }, 2000);
-            });
+                navigator.clipboard.writeText(url).then(() => {
+                    this.innerHTML = `<i class="fa-solid fa-check"></i> COPIED`;
+                    this.classList.replace("bg-cyan-500", "bg-emerald-500");
+                    setTimeout(() => {
+                        this.innerHTML = `<i class="fa-solid fa-copy"></i> COPY`;
+                        this.classList.replace("bg-emerald-500", "bg-cyan-500");
+                    }, 2000);
+                });
+            };
         });
     </script>
 </body>
