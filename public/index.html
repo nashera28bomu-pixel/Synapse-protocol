@@ -3,594 +3,68 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <title>Cymor Business Enterprise | AI WhatsApp Automation</title>
-
-  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Google Font -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
   <style>
-    *{
-      font-family: 'Outfit', sans-serif;
-    }
-
-    body{
-      background: #020617;
-      overflow-x: hidden;
-    }
-
-    .glass{
-      background: rgba(255,255,255,0.08);
-      backdrop-filter: blur(18px);
-      border: 1px solid rgba(255,255,255,0.1);
-    }
-
-    .hero-glow{
-      position:absolute;
-      width:500px;
-      height:500px;
-      border-radius:999px;
-      filter:blur(120px);
-      opacity:0.35;
-      z-index:-1;
-    }
-
-    .gradient-text{
-      background: linear-gradient(to right,#38bdf8,#818cf8,#c084fc);
-      -webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;
-    }
-
-    .card-hover{
-      transition:0.4s ease;
-    }
-
-    .card-hover:hover{
-      transform: translateY(-10px);
-      box-shadow:0 20px 50px rgba(59,130,246,0.25);
-    }
-
-    .input-style{
-      width:100%;
-      padding:18px;
-      border-radius:18px;
-      background: rgba(255,255,255,0.06);
-      border:1px solid rgba(255,255,255,0.08);
-      color:white;
-      outline:none;
-      transition:0.3s ease;
-    }
-
-    .input-style:focus{
-      border-color:#60a5fa;
-      box-shadow:0 0 0 4px rgba(96,165,250,0.15);
-    }
-
-    .input-style::placeholder{
-      color:#94a3b8;
-    }
-
-    .floating{
-      animation: float 4s ease-in-out infinite;
-    }
-
-    @keyframes float{
-      0%{
-        transform: translateY(0px);
-      }
-      50%{
-        transform: translateY(-15px);
-      }
-      100%{
-        transform: translateY(0px);
-      }
-    }
-
-    .grid-pattern{
-      background-image:
-      linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
-
-      background-size:50px 50px;
-    }
+    body { font-family: 'Outfit', sans-serif; background: #020617; color: white; overflow-x: hidden; }
+    .glass { background: rgba(255,255,255,0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); }
+    .gradient-text { background: linear-gradient(to right, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
   </style>
 </head>
+<body>
 
-<body class="text-white">
-
-  <!-- BACKGROUND -->
-  <div class="hero-glow bg-blue-500 top-0 left-0"></div>
-  <div class="hero-glow bg-purple-500 bottom-0 right-0"></div>
-
-  <!-- NAVBAR -->
-  <nav class="fixed top-0 left-0 w-full z-50 border-b border-white/10 bg-slate-950/70 backdrop-blur-xl">
-    <div class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
-      
-      <div>
-        <h1 class="text-2xl font-black tracking-tight">
-          Cymor<span class="text-blue-400">Enterprise</span>
-        </h1>
-      </div>
-
-      <div class="hidden md:flex items-center gap-8 text-slate-300">
-        <a href="#features" class="hover:text-white transition">Features</a>
-        <a href="#setup" class="hover:text-white transition">Setup</a>
-        <a href="#benefits" class="hover:text-white transition">Benefits</a>
-      </div>
-
-      <a href="#setup" class="bg-blue-600 hover:bg-blue-500 transition px-6 py-3 rounded-full font-semibold shadow-lg shadow-blue-500/30">
-        Launch Bot
-      </a>
-
+  <nav class="fixed w-full z-50 glass border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+      <h1 class="text-2xl font-black">Cymor<span class="text-blue-400">Enterprise</span></h1>
+      <a href="setup.html" class="bg-blue-600 hover:bg-blue-500 px-6 py-2 rounded-full font-bold transition">Launch Bot</a>
     </div>
   </nav>
 
-  <!-- HERO -->
-  <section class="relative min-h-screen flex items-center justify-center overflow-hidden grid-pattern">
-
-    <div class="max-w-7xl mx-auto px-6 pt-40 pb-24 grid lg:grid-cols-2 gap-16 items-center">
-
-      <!-- LEFT -->
-      <div>
-
-        <div class="inline-flex items-center gap-2 glass px-5 py-2 rounded-full mb-8">
-          <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-          <p class="text-sm text-slate-200">
-            AI WhatsApp Automation Platform
-          </p>
-        </div>
-
-        <h1 class="text-5xl md:text-7xl font-black leading-tight mb-8">
-          Run Your Business
-          <span class="gradient-text block">
-            While You Sleep.
-          </span>
-        </h1>
-
-        <p class="text-xl text-slate-300 leading-relaxed max-w-2xl mb-10">
-          Transform your WhatsApp into a smart AI-powered business assistant that replies instantly, takes orders automatically, calculates deliveries, sends invoices, and handles customers 24/7 without stress.
-        </p>
-
-        <div class="flex flex-wrap gap-5">
-
-          <a href="#setup" class="bg-blue-600 hover:bg-blue-500 transition px-8 py-5 rounded-2xl font-bold text-lg shadow-2xl shadow-blue-500/30">
-            Start Building
-          </a>
-
-          <a href="#features" class="glass hover:bg-white/10 transition px-8 py-5 rounded-2xl font-bold text-lg">
-            Explore Features
-          </a>
-
-        </div>
-
-        <!-- STATS -->
-        <div class="grid grid-cols-3 gap-6 mt-14">
-
-          <div class="glass rounded-3xl p-5 text-center">
-            <h2 class="text-3xl font-black text-blue-400">24/7</h2>
-            <p class="text-slate-300 text-sm mt-1">Auto Replies</p>
-          </div>
-
-          <div class="glass rounded-3xl p-5 text-center">
-            <h2 class="text-3xl font-black text-purple-400">AI</h2>
-            <p class="text-slate-300 text-sm mt-1">Smart Assistant</p>
-          </div>
-
-          <div class="glass rounded-3xl p-5 text-center">
-            <h2 class="text-3xl font-black text-cyan-400">Fast</h2>
-            <p class="text-slate-300 text-sm mt-1">Order Processing</p>
-          </div>
-
-        </div>
-
-      </div>
-
-      <!-- RIGHT -->
-      <div class="relative flex justify-center">
-
-        <div class="glass rounded-[40px] p-6 w-full max-w-md floating">
-
-          <!-- TOP -->
-          <div class="flex items-center justify-between mb-6">
-            <div>
-              <h2 class="font-bold text-lg">Cymor Assistant</h2>
-              <p class="text-green-400 text-sm">● Online</p>
-            </div>
-
-            <div class="bg-blue-500/20 text-blue-300 px-4 py-2 rounded-full text-sm">
-              AI BOT
-            </div>
-          </div>
-
-          <!-- CHAT -->
-          <div class="space-y-4">
-
-            <div class="bg-white/10 p-4 rounded-2xl max-w-[85%]">
-              Hi 👋 Welcome to Cymor Foods. What would you like to order today?
-            </div>
-
-            <div class="bg-blue-600 p-4 rounded-2xl ml-auto max-w-[85%]">
-              I want 2 burgers and fries.
-            </div>
-
-            <div class="bg-white/10 p-4 rounded-2xl max-w-[85%]">
-              Perfect ✅<br><br>
-              Total: KES 1,450<br>
-              Delivery: KES 200<br><br>
-              Send payment to Paybill 123456.
-            </div>
-
-            <div class="bg-white/10 p-4 rounded-2xl max-w-[85%]">
-              Your order has been confirmed 🚀
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
-
+  <section class="pt-40 pb-20 text-center px-6">
+    <h1 class="text-6xl md:text-8xl font-black mb-8">Your Business, <span class="gradient-text">On Autopilot.</span></h1>
+    <p class="text-xl text-slate-400 max-w-2xl mx-auto mb-10">Stop manually typing menus. Cymor Business Enterprise turns your WhatsApp into a professional 24/7 sales engine that manages orders, payments, and deliveries while you sleep.</p>
+    <a href="setup.html" class="bg-blue-600 hover:bg-blue-500 px-10 py-5 rounded-2xl font-bold text-lg shadow-2xl shadow-blue-500/20">Start Building My Bot</a>
   </section>
 
-  <!-- FEATURES -->
-  <section id="features" class="py-28 px-6">
-
+  <section id="features" class="py-20 px-6">
     <div class="max-w-7xl mx-auto">
-
-      <div class="text-center mb-20">
-        <h2 class="text-5xl font-black mb-6">
-          Elite Features
-        </h2>
-
-        <p class="text-slate-400 text-xl max-w-3xl mx-auto">
-          Everything your business needs to automate sales, customer support, payments, and deliveries professionally.
-        </p>
+      <h2 class="text-4xl font-black text-center mb-16">Why Businesses Love Cymor</h2>
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="glass p-8 rounded-3xl">
+          <div class="text-4xl mb-4">🤖</div>
+          <h3 class="text-xl font-bold mb-2">AI-Powered Assistant</h3>
+          <p class="text-slate-400">Our bot understands intent, handles product inquiries, and closes sales with human-like precision.</p>
+        </div>
+        <div class="glass p-8 rounded-3xl">
+          <div class="text-4xl mb-4">💳</div>
+          <h3 class="text-xl font-bold mb-2">Automated Payments</h3>
+          <p class="text-slate-400">Configurable payment instructions that guide customers through safe checkout workflows instantly.</p>
+        </div>
+        <div class="glass p-8 rounded-3xl">
+          <div class="text-4xl mb-4">🚚</div>
+          <h3 class="text-xl font-bold mb-2">Logistics Integration</h3>
+          <p class="text-slate-400">Built-in delivery fee calculators and location-based logic to manage your logistics effortlessly.</p>
+        </div>
       </div>
-
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-
-        <div class="glass rounded-3xl p-8 card-hover">
-          <div class="text-5xl mb-5">🤖</div>
-          <h3 class="text-2xl font-bold mb-4">AI Auto Replies</h3>
-          <p class="text-slate-300">
-            Instantly respond to customers with intelligent human-like replies.
-          </p>
-        </div>
-
-        <div class="glass rounded-3xl p-8 card-hover">
-          <div class="text-5xl mb-5">🛒</div>
-          <h3 class="text-2xl font-bold mb-4">Smart Ordering</h3>
-          <p class="text-slate-300">
-            Customers can browse menus and place orders automatically.
-          </p>
-        </div>
-
-        <div class="glass rounded-3xl p-8 card-hover">
-          <div class="text-5xl mb-5">💳</div>
-          <h3 class="text-2xl font-bold mb-4">Payment Collection</h3>
-          <p class="text-slate-300">
-            Send instant payment instructions and confirmations.
-          </p>
-        </div>
-
-        <div class="glass rounded-3xl p-8 card-hover">
-          <div class="text-5xl mb-5">🚚</div>
-          <h3 class="text-2xl font-bold mb-4">Delivery Management</h3>
-          <p class="text-slate-300">
-            Automatically calculate delivery charges and locations.
-          </p>
-        </div>
-
-        <div class="glass rounded-3xl p-8 card-hover">
-          <div class="text-5xl mb-5">📦</div>
-          <h3 class="text-2xl font-bold mb-4">CSV Product Uploads</h3>
-          <p class="text-slate-300">
-            Upload your products instantly using CSV spreadsheets.
-          </p>
-        </div>
-
-        <div class="glass rounded-3xl p-8 card-hover">
-          <div class="text-5xl mb-5">📈</div>
-          <h3 class="text-2xl font-bold mb-4">Business Growth</h3>
-          <p class="text-slate-300">
-            Scale your business with faster responses and automated workflows.
-          </p>
-        </div>
-
-      </div>
-
     </div>
-
   </section>
 
-  <!-- FORM -->
-  <section id="setup" class="py-28 px-6">
-
-    <div class="max-w-5xl mx-auto glass rounded-[40px] p-8 md:p-14 border border-white/10">
-
-      <div class="text-center mb-14">
-        <h2 class="text-5xl font-black mb-5">
-          Business Onboarding
-        </h2>
-
-        <p class="text-slate-400 text-lg">
-          Configure your AI WhatsApp assistant in minutes.
-        </p>
-      </div>
-
-      <form id="businessForm" class="grid md:grid-cols-2 gap-6">
-
-        <div>
-          <label class="block mb-3 text-slate-300 font-semibold">
-            Business Name
-          </label>
-
-          <input 
-            type="text"
-            id="bizName"
-            placeholder="Cymor Foods"
-            class="input-style"
-            required
-          >
-        </div>
-
-        <div>
-          <label class="block mb-3 text-slate-300 font-semibold">
-            WhatsApp Number
-          </label>
-
-          <input 
-            type="text"
-            id="bizPhone"
-            placeholder="+254..."
-            class="input-style"
-            required
-          >
-        </div>
-
-        <div class="md:col-span-2">
-          <label class="block mb-3 text-slate-300 font-semibold">
-            Payment Instructions
-          </label>
-
-          <textarea 
-            id="paymentInfo"
-            rows="4"
-            placeholder="Paybill 123456, Account Name..."
-            class="input-style"
-            required
-          ></textarea>
-        </div>
-
-        <div class="md:col-span-2">
-          <label class="block mb-3 text-slate-300 font-semibold">
-            Delivery Areas & Fees
-          </label>
-
-          <input 
-            type="text"
-            id="deliveryAreas"
-            placeholder="Mombasa CBD: 200, Nyali: 300..."
-            class="input-style"
-            required
-          >
-        </div>
-
-        <div class="md:col-span-2">
-
-          <label class="block mb-4 text-slate-300 font-semibold">
-            Upload Products CSV
-          </label>
-
-          <div class="border-2 border-dashed border-white/20 rounded-3xl p-10 text-center bg-white/5 hover:bg-white/10 transition">
-
-            <div class="text-6xl mb-4">📁</div>
-
-            <p class="text-slate-300 mb-4">
-              Drag & Drop CSV File Here
-            </p>
-
-            <input 
-              type="file"
-              id="csvFile"
-              class="text-slate-400"
-            >
-
-          </div>
-
-        </div>
-
-        <div class="md:col-span-2">
-          <label class="block mb-3 text-slate-300 font-semibold">
-            Assistant Tone
-          </label>
-
-          <select id="botTone" class="input-style">
-
-            <option value="pro">
-              Professional Tone
-            </option>
-
-            <option value="casual">
-              Friendly / Casual Tone
-            </option>
-
-            <option value="luxury">
-              Luxury Brand Tone
-            </option>
-
-          </select>
-        </div>
-
-        <button 
-          type="submit"
-          class="md:col-span-2 mt-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:scale-[1.02] transition-all duration-300 text-white py-5 rounded-2xl font-black text-xl shadow-2xl shadow-blue-500/20"
-        >
-          🚀 Generate My AI Bot
-        </button>
-
-      </form>
-
-    </div>
-
-  </section>
-
-  <!-- BENEFITS -->
-  <section id="benefits" class="py-28 px-6">
-
-    <div class="max-w-7xl mx-auto">
-
-      <div class="glass rounded-[40px] p-10 md:p-16">
-
-        <div class="grid lg:grid-cols-2 gap-16 items-center">
-
-          <div>
-            <h2 class="text-5xl font-black leading-tight mb-8">
-              Why Businesses
-              <span class="gradient-text">
-                Love Cymor
-              </span>
-            </h2>
-
-            <div class="space-y-6">
-
-              <div class="flex gap-4">
-                <div class="text-3xl">⚡</div>
-                <div>
-                  <h3 class="font-bold text-xl mb-1">
-                    Faster Customer Support
-                  </h3>
-                  <p class="text-slate-400">
-                    Reply to hundreds of customers instantly without delays.
-                  </p>
-                </div>
-              </div>
-
-              <div class="flex gap-4">
-                <div class="text-3xl">💰</div>
-                <div>
-                  <h3 class="font-bold text-xl mb-1">
-                    More Sales
-                  </h3>
-                  <p class="text-slate-400">
-                    Convert conversations into orders automatically.
-                  </p>
-                </div>
-              </div>
-
-              <div class="flex gap-4">
-                <div class="text-3xl">🌍</div>
-                <div>
-                  <h3 class="font-bold text-xl mb-1">
-                    Available 24/7
-                  </h3>
-                  <p class="text-slate-400">
-                    Your assistant never sleeps or misses customers.
-                  </p>
-                </div>
-              </div>
-
-            </div>
-          </div>
-
-          <div class="glass rounded-3xl p-8 border border-white/10">
-
-            <div class="space-y-6">
-
-              <div class="flex items-center justify-between">
-                <span class="text-slate-300">
-                  Customer Satisfaction
-                </span>
-
-                <span class="font-black text-2xl text-green-400">
-                  98%
-                </span>
-              </div>
-
-              <div class="w-full bg-white/10 rounded-full h-4">
-                <div class="bg-green-400 h-4 rounded-full w-[98%]"></div>
-              </div>
-
-              <div class="flex items-center justify-between">
-                <span class="text-slate-300">
-                  Automation Speed
-                </span>
-
-                <span class="font-black text-2xl text-blue-400">
-                  Ultra Fast
-                </span>
-              </div>
-
-              <div class="w-full bg-white/10 rounded-full h-4">
-                <div class="bg-blue-400 h-4 rounded-full w-[95%]"></div>
-              </div>
-
-              <div class="flex items-center justify-between">
-                <span class="text-slate-300">
-                  Business Efficiency
-                </span>
-
-                <span class="font-black text-2xl text-purple-400">
-                  +300%
-                </span>
-              </div>
-
-              <div class="w-full bg-white/10 rounded-full h-4">
-                <div class="bg-purple-400 h-4 rounded-full w-[90%]"></div>
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  </section>
-
-  <!-- FOOTER -->
-  <footer class="border-t border-white/10 py-12 px-6">
-
-    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-
+  <section class="py-20 px-6 bg-slate-900/50">
+    <div class="max-w-4xl mx-auto glass p-12 rounded-[40px] flex flex-col md:flex-row items-center gap-10">
+      <div class="w-40 h-40 bg-blue-600 rounded-full flex items-center justify-center text-6xl shadow-xl">👤</div>
       <div>
-        <h2 class="text-2xl font-black">
-          Cymor<span class="text-blue-400">Enterprise</span>
-        </h2>
-
-        <p class="text-slate-500 mt-2">
-          Elite AI Business Automation Platform
-        </p>
+        <h2 class="text-sm font-bold text-blue-400 uppercase tracking-widest mb-1">Meet the Founder</h2>
+        <h3 class="text-4xl font-black mb-4">The Legendary Smiley Cymor</h3>
+        <p class="text-slate-300 italic">"My mission is to empower African businesses by bridging the gap between manual customer service and modern AI technology. Cymor Enterprise is the result of that vision."</p>
       </div>
-
-      <div class="text-center md:text-right">
-        <p class="text-slate-400">
-          © 2026 CymorTechServices. All rights reserved.
-        </p>
-
-        <p class="text-slate-500 mt-2">
-          Built by the Legendary Smiley Cymor 🚀
-        </p>
-      </div>
-
     </div>
+  </section>
 
+  <footer class="py-12 text-center border-t border-white/10 mt-20">
+    <p class="font-bold text-lg mb-2">CymorTechServices 2026</p>
+    <p class="text-slate-500">Site crafted by the Legendary Smiley Cymor</p>
   </footer>
 
-  <!-- SCRIPT -->
-  <script src="script.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-
 </body>
-    </html>
+</html>
