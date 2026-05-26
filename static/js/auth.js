@@ -1,6 +1,7 @@
 // ===============================
 // ESSDEE BUSINESS ENTERPRISE
 // AUTH SYSTEM (FULL SAAS VERSION)
+// Developed by Legendary Smiley Cymor & David the Developer
 // ===============================
 
 // Firebase imports
@@ -24,7 +25,7 @@ import {
 
 
 // ===============================
-// CONFIG (YOU WILL EDIT THIS)
+// FIREBASE CONFIG
 // ===============================
 const firebaseConfig = {
   apiKey: "AIzaSyDN3-4-2tUJBCipzIJS7FICD5S0d1hpzMc",
@@ -35,7 +36,6 @@ const firebaseConfig = {
   appId: "1:198388530874:web:e7fa53972cf895b11acc83"
 };
 
-
 // INIT
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -43,28 +43,28 @@ const db = getFirestore(app);
 
 
 // ===============================
-// UI LOADING OVERLAY (FULL SCREEN)
+// LOADER UI
 // ===============================
 function showLoader(message = "Processing...") {
-  let loader = document.createElement("div");
-
+  const loader = document.createElement("div");
   loader.id = "globalLoader";
+
   loader.innerHTML = `
     <div style="
       position:fixed;
-      top:0;left:0;
-      width:100%;height:100%;
+      inset:0;
       background:rgba(0,0,0,0.75);
       display:flex;
+      flex-direction:column;
       align-items:center;
       justify-content:center;
-      flex-direction:column;
       z-index:99999;
       color:white;
       font-family:Inter;
     ">
       <div style="
-        width:60px;height:60px;
+        width:60px;
+        height:60px;
         border:4px solid #7c3aed;
         border-top:4px solid transparent;
         border-radius:50%;
@@ -87,8 +87,7 @@ function showLoader(message = "Processing...") {
 }
 
 function hideLoader() {
-  const loader = document.getElementById("globalLoader");
-  if (loader) loader.remove();
+  document.getElementById("globalLoader")?.remove();
 }
 
 
@@ -101,6 +100,7 @@ async function saveUser(user, extraData = {}) {
     email: user.email,
     name: user.displayName || "",
     createdAt: new Date().toISOString(),
+    developerSignature: "Legendary Smiley Cymor & David the Developer",
     ...extraData
   });
 }
@@ -138,12 +138,18 @@ if (registerForm) {
 
       const user = userCredential.user;
 
+      // Set display name with branding tag (soft identity layer)
       await updateProfile(user, {
-        displayName: fullName
+        displayName: `${fullName} | EssDee User`
       });
 
-      // Send email verification (future-proof SaaS)
-      await sendEmailVerification(user);
+      // IMPORTANT: ensure auth state is ready
+      await auth.currentUser.reload();
+
+      // SEND VERIFICATION EMAIL (FIXED RELIABLE METHOD)
+      await sendEmailVerification(auth.currentUser, {
+        url: window.location.origin + "/auth/login.html"
+      });
 
       await saveUser(user, {
         fullName,
@@ -156,7 +162,9 @@ if (registerForm) {
 
       hideLoader();
 
-      alert("Account created! Check your email for verification.");
+      alert(
+        "Account created successfully!\n\nCheck your email inbox or spam folder to verify your account.\n\nDevelopers: Legendary Smiley Cymor & David the Developer"
+      );
 
       window.location.href = "login.html";
 
@@ -191,7 +199,6 @@ if (loginForm) {
 
       const user = userCredential.user;
 
-      // Get Firestore profile
       const userSnap = await getDoc(doc(db, "users", user.uid));
 
       if (!userSnap.exists()) {
@@ -200,16 +207,18 @@ if (loginForm) {
 
       const userData = userSnap.data();
 
+      if (!user.emailVerified) {
+        await signOut(auth);
+        hideLoader();
+
+        alert("Please verify your email before continuing.");
+        return;
+      }
+
       localStorage.setItem("uid", user.uid);
       localStorage.setItem("businessName", userData.businessName);
 
       hideLoader();
-
-      // Optional verification check
-      if (!user.emailVerified) {
-        alert("Please verify your email before continuing.");
-        return;
-      }
 
       window.location.href = "../dashboard/dashboard.html";
 
@@ -222,25 +231,19 @@ if (loginForm) {
 
 
 // ===============================
-// AUTO LOGIN CHECK (SESSION PERSISTENCE)
+// AUTO SESSION CHECK
 // ===============================
-onAuthStateChanged(auth, async (user) => {
+onAuthStateChanged(auth, (user) => {
   if (!user) return;
 
-  // If user is already logged in and on login page
   if (window.location.pathname.includes("login.html")) {
     window.location.href = "../dashboard/dashboard.html";
-  }
-
-  // If user is not verified (optional enforcement)
-  if (user && !user.emailVerified) {
-    console.log("User not verified yet");
   }
 });
 
 
 // ===============================
-// LOGOUT SYSTEM (GLOBAL)
+// LOGOUT
 // ===============================
 export async function logout() {
   try {
@@ -262,7 +265,7 @@ export async function logout() {
 
 
 // ===============================
-// ROUTE PROTECTION (USE IN DASHBOARD)
+// ROUTE PROTECTION
 // ===============================
 export function protectRoute() {
   onAuthStateChanged(auth, (user) => {
@@ -270,4 +273,4 @@ export function protectRoute() {
       window.location.href = "../auth/login.html";
     }
   });
-                     }
+}
