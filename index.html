@@ -1,70 +1,920 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cymor Business Enterprise | AI WhatsApp Automation</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
+
+  <title>EssDee Business Enterprise</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+
+  <!-- AOS Animation -->
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css"/>
+
   <style>
-    body { font-family: 'Outfit', sans-serif; background: #020617; color: white; overflow-x: hidden; }
-    .glass { background: rgba(255,255,255,0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); }
-    .gradient-text { background: linear-gradient(to right, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      scroll-behavior:smooth;
+    }
+
+    body{
+      font-family:'Inter',sans-serif;
+      background:#060816;
+      color:white;
+      overflow-x:hidden;
+    }
+
+    a{
+      text-decoration:none;
+      color:inherit;
+    }
+
+    ul{
+      list-style:none;
+    }
+
+    .container{
+      width:90%;
+      max-width:1300px;
+      margin:auto;
+    }
+
+    /* NAVBAR */
+
+    nav{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      z-index:1000;
+      backdrop-filter:blur(14px);
+      background:rgba(10,12,25,0.75);
+      border-bottom:1px solid rgba(255,255,255,0.08);
+    }
+
+    .nav-container{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:18px 0;
+    }
+
+    .logo{
+      font-size:1.6rem;
+      font-weight:800;
+      color:#8b5cf6;
+    }
+
+    .nav-links{
+      display:flex;
+      gap:30px;
+    }
+
+    .nav-links a{
+      color:#d1d5db;
+      transition:0.3s;
+      font-size:0.95rem;
+    }
+
+    .nav-links a:hover{
+      color:white;
+    }
+
+    .nav-buttons{
+      display:flex;
+      gap:15px;
+    }
+
+    .btn{
+      padding:12px 22px;
+      border-radius:12px;
+      font-weight:600;
+      transition:0.3s;
+      display:inline-block;
+    }
+
+    .btn-outline{
+      border:1px solid rgba(255,255,255,0.15);
+      color:white;
+    }
+
+    .btn-outline:hover{
+      background:white;
+      color:#111827;
+    }
+
+    .btn-primary{
+      background:linear-gradient(135deg,#7c3aed,#4f46e5);
+      color:white;
+      box-shadow:0 10px 30px rgba(124,58,237,0.4);
+    }
+
+    .btn-primary:hover{
+      transform:translateY(-3px);
+    }
+
+    /* HERO */
+
+    .hero{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .hero::before{
+      content:"";
+      position:absolute;
+      width:500px;
+      height:500px;
+      background:#7c3aed;
+      filter:blur(180px);
+      top:-100px;
+      left:-100px;
+      opacity:0.35;
+    }
+
+    .hero::after{
+      content:"";
+      position:absolute;
+      width:400px;
+      height:400px;
+      background:#2563eb;
+      filter:blur(180px);
+      bottom:-120px;
+      right:-100px;
+      opacity:0.35;
+    }
+
+    .hero-content{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:60px;
+      align-items:center;
+      z-index:2;
+      position:relative;
+    }
+
+    .hero-text h1{
+      font-size:4rem;
+      line-height:1.1;
+      margin-bottom:25px;
+      font-weight:900;
+    }
+
+    .hero-text p{
+      color:#cbd5e1;
+      font-size:1.1rem;
+      line-height:1.8;
+      margin-bottom:35px;
+    }
+
+    .hero-buttons{
+      display:flex;
+      gap:20px;
+      flex-wrap:wrap;
+      margin-bottom:40px;
+    }
+
+    .hero-stats{
+      display:flex;
+      gap:40px;
+      flex-wrap:wrap;
+    }
+
+    .stat h3{
+      font-size:2rem;
+      color:#8b5cf6;
+    }
+
+    .stat p{
+      color:#9ca3af;
+      margin-top:5px;
+    }
+
+    /* DASHBOARD MOCKUP */
+
+    .dashboard-preview{
+      background:rgba(255,255,255,0.06);
+      border:1px solid rgba(255,255,255,0.1);
+      backdrop-filter:blur(20px);
+      border-radius:28px;
+      padding:25px;
+      box-shadow:0 20px 60px rgba(0,0,0,0.45);
+      animation:float 5s ease-in-out infinite;
+    }
+
+    @keyframes float{
+      0%{
+        transform:translateY(0px);
+      }
+      50%{
+        transform:translateY(-12px);
+      }
+      100%{
+        transform:translateY(0px);
+      }
+    }
+
+    .dashboard-top{
+      display:flex;
+      justify-content:space-between;
+      margin-bottom:25px;
+    }
+
+    .circle-group{
+      display:flex;
+      gap:10px;
+    }
+
+    .circle{
+      width:14px;
+      height:14px;
+      border-radius:50%;
+    }
+
+    .red{background:#ef4444;}
+    .yellow{background:#f59e0b;}
+    .green{background:#10b981;}
+
+    .dashboard-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:20px;
+    }
+
+    .card{
+      background:rgba(255,255,255,0.05);
+      border-radius:18px;
+      padding:20px;
+      border:1px solid rgba(255,255,255,0.06);
+    }
+
+    .card h4{
+      margin-bottom:10px;
+      color:#d1d5db;
+    }
+
+    .card .big{
+      font-size:2rem;
+      font-weight:800;
+      color:white;
+    }
+
+    .chart{
+      height:120px;
+      margin-top:15px;
+      border-radius:12px;
+      background:linear-gradient(
+      to top,
+      rgba(124,58,237,0.4),
+      rgba(37,99,235,0.1)
+      );
+    }
+
+    /* FEATURES */
+
+    section{
+      padding:120px 0;
+    }
+
+    .section-title{
+      text-align:center;
+      margin-bottom:70px;
+    }
+
+    .section-title h2{
+      font-size:3rem;
+      margin-bottom:15px;
+    }
+
+    .section-title p{
+      color:#9ca3af;
+      max-width:700px;
+      margin:auto;
+      line-height:1.7;
+    }
+
+    .features-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+      gap:30px;
+    }
+
+    .feature-card{
+      background:rgba(255,255,255,0.04);
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:24px;
+      padding:35px;
+      transition:0.4s;
+    }
+
+    .feature-card:hover{
+      transform:translateY(-10px);
+      border-color:#7c3aed;
+    }
+
+    .feature-icon{
+      width:70px;
+      height:70px;
+      border-radius:18px;
+      background:linear-gradient(135deg,#7c3aed,#4f46e5);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:1.6rem;
+      margin-bottom:25px;
+    }
+
+    .feature-card h3{
+      margin-bottom:15px;
+      font-size:1.3rem;
+    }
+
+    .feature-card p{
+      color:#9ca3af;
+      line-height:1.7;
+    }
+
+    /* PRICING */
+
+    .pricing-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+      gap:30px;
+    }
+
+    .pricing-card{
+      background:rgba(255,255,255,0.05);
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:28px;
+      padding:40px;
+      transition:0.4s;
+      position:relative;
+    }
+
+    .pricing-card:hover{
+      transform:translateY(-10px);
+    }
+
+    .popular{
+      border:2px solid #8b5cf6;
+    }
+
+    .badge{
+      position:absolute;
+      top:20px;
+      right:20px;
+      background:#8b5cf6;
+      padding:6px 14px;
+      border-radius:30px;
+      font-size:0.8rem;
+      font-weight:700;
+    }
+
+    .pricing-card h3{
+      font-size:1.7rem;
+      margin-bottom:15px;
+    }
+
+    .price{
+      font-size:3rem;
+      font-weight:800;
+      margin-bottom:20px;
+    }
+
+    .pricing-card ul{
+      margin:30px 0;
+    }
+
+    .pricing-card ul li{
+      margin-bottom:15px;
+      color:#cbd5e1;
+    }
+
+    /* CTA */
+
+    .cta{
+      text-align:center;
+      background:linear-gradient(135deg,#7c3aed,#2563eb);
+      border-radius:35px;
+      padding:80px 30px;
+    }
+
+    .cta h2{
+      font-size:3rem;
+      margin-bottom:20px;
+    }
+
+    .cta p{
+      max-width:700px;
+      margin:auto;
+      margin-bottom:40px;
+      line-height:1.7;
+      color:#e5e7eb;
+    }
+
+    /* FOOTER */
+
+    footer{
+      padding:50px 0;
+      border-top:1px solid rgba(255,255,255,0.08);
+      margin-top:120px;
+    }
+
+    .footer-content{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      flex-wrap:wrap;
+      gap:20px;
+    }
+
+    .footer-content p{
+      color:#9ca3af;
+    }
+
+    .socials{
+      display:flex;
+      gap:15px;
+    }
+
+    .socials a{
+      width:45px;
+      height:45px;
+      border-radius:12px;
+      background:rgba(255,255,255,0.06);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transition:0.3s;
+    }
+
+    .socials a:hover{
+      background:#7c3aed;
+    }
+
+    /* MOBILE */
+
+    .menu-btn{
+      display:none;
+      font-size:1.5rem;
+      cursor:pointer;
+    }
+
+    @media(max-width:1000px){
+
+      .hero-content{
+        grid-template-columns:1fr;
+      }
+
+      .hero-text{
+        text-align:center;
+      }
+
+      .hero-buttons{
+        justify-content:center;
+      }
+
+      .hero-stats{
+        justify-content:center;
+      }
+
+      .hero-text h1{
+        font-size:3rem;
+      }
+
+    }
+
+    @media(max-width:768px){
+
+      .nav-links,
+      .nav-buttons{
+        display:none;
+      }
+
+      .menu-btn{
+        display:block;
+      }
+
+      .section-title h2{
+        font-size:2.2rem;
+      }
+
+      .hero-text h1{
+        font-size:2.5rem;
+      }
+
+      .cta h2{
+        font-size:2.2rem;
+      }
+
+      .dashboard-grid{
+        grid-template-columns:1fr;
+      }
+
+    }
+
   </style>
 </head>
+
 <body>
 
-  <nav class="fixed w-full z-50 glass border-b border-white/10">
-    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-      <h1 class="text-2xl font-black">Cymor<span class="text-blue-400">Enterprise</span></h1>
-      <a href="setup.html" class="bg-blue-600 hover:bg-blue-500 px-6 py-2 rounded-full font-bold transition">Launch Bot</a>
+  <!-- NAVBAR -->
+
+  <nav>
+    <div class="container nav-container">
+
+      <div class="logo">
+        EssDee
+      </div>
+
+      <ul class="nav-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#solutions">Solutions</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+
+      <div class="nav-buttons">
+        <a href="auth/login.html" class="btn btn-outline">
+          Login
+        </a>
+
+        <a href="auth/register.html" class="btn btn-primary">
+          Start Free
+        </a>
+      </div>
+
+      <div class="menu-btn">
+        <i class="fas fa-bars"></i>
+      </div>
+
     </div>
   </nav>
 
-  <section class="pt-40 pb-20 text-center px-6">
-    <h1 class="text-6xl md:text-8xl font-black mb-8">Your Business, <span class="gradient-text">On Autopilot.</span></h1>
-    <p class="text-xl text-slate-400 max-w-2xl mx-auto mb-10">Stop manually typing menus. Cymor Business Enterprise turns your WhatsApp into a professional 24/7 sales engine that manages orders, payments, and deliveries while you sleep.</p>
-    <a href="setup.html" class="bg-blue-600 hover:bg-blue-500 px-10 py-5 rounded-2xl font-bold text-lg shadow-2xl shadow-blue-500/20">Start Building My Bot</a>
-  </section>
+  <!-- HERO -->
 
-  <section id="features" class="py-20 px-6">
-    <div class="max-w-7xl mx-auto">
-      <h2 class="text-4xl font-black text-center mb-16">Why Businesses Love Cymor</h2>
-      <div class="grid md:grid-cols-3 gap-8">
-        <div class="glass p-8 rounded-3xl">
-          <div class="text-4xl mb-4">🤖</div>
-          <h3 class="text-xl font-bold mb-2">AI-Powered Assistant</h3>
-          <p class="text-slate-400">Our bot understands intent, handles product inquiries, and closes sales with human-like precision.</p>
+  <section class="hero">
+
+    <div class="container hero-content">
+
+      <div class="hero-text" data-aos="fade-right">
+
+        <h1>
+          Run Your Entire Business From One Powerful Platform.
+        </h1>
+
+        <p>
+          Smart POS, Inventory Management, Employee Tracking, Analytics,
+          Reports and WhatsApp Automation — all inside one modern
+          business ecosystem.
+        </p>
+
+        <div class="hero-buttons">
+
+          <a href="auth/register.html" class="btn btn-primary">
+            Start Free
+          </a>
+
+          <a href="#" class="btn btn-outline">
+            Watch Demo
+          </a>
+
         </div>
-        <div class="glass p-8 rounded-3xl">
-          <div class="text-4xl mb-4">💳</div>
-          <h3 class="text-xl font-bold mb-2">Automated Payments</h3>
-          <p class="text-slate-400">Configurable payment instructions that guide customers through safe checkout workflows instantly.</p>
+
+        <div class="hero-stats">
+
+          <div class="stat">
+            <h3>500+</h3>
+            <p>Businesses</p>
+          </div>
+
+          <div class="stat">
+            <h3>24/7</h3>
+            <p>Cloud Access</p>
+          </div>
+
+          <div class="stat">
+            <h3>99.9%</h3>
+            <p>System Uptime</p>
+          </div>
+
         </div>
-        <div class="glass p-8 rounded-3xl">
-          <div class="text-4xl mb-4">🚚</div>
-          <h3 class="text-xl font-bold mb-2">Logistics Integration</h3>
-          <p class="text-slate-400">Built-in delivery fee calculators and location-based logic to manage your logistics effortlessly.</p>
-        </div>
+
       </div>
-    </div>
-  </section>
 
-  <section class="py-20 px-6 bg-slate-900/50">
-    <div class="max-w-4xl mx-auto glass p-12 rounded-[40px] flex flex-col md:flex-row items-center gap-10">
-      <div class="w-40 h-40 bg-blue-600 rounded-full flex items-center justify-center text-6xl shadow-xl">👤</div>
-      <div>
-        <h2 class="text-sm font-bold text-blue-400 uppercase tracking-widest mb-1">Meet the Founder</h2>
-        <h3 class="text-4xl font-black mb-4">The Legendary Smiley Cymor</h3>
-        <p class="text-slate-300 italic">"My mission is to empower African businesses by bridging the gap between manual customer service and modern AI technology. Cymor Enterprise is the result of that vision."</p>
+      <!-- DASHBOARD MOCKUP -->
+
+      <div class="dashboard-preview" data-aos="fade-left">
+
+        <div class="dashboard-top">
+
+          <div class="circle-group">
+            <div class="circle red"></div>
+            <div class="circle yellow"></div>
+            <div class="circle green"></div>
+          </div>
+
+          <span>EssDee Dashboard</span>
+
+        </div>
+
+        <div class="dashboard-grid">
+
+          <div class="card">
+            <h4>Total Sales</h4>
+            <div class="big">$24,500</div>
+            <div class="chart"></div>
+          </div>
+
+          <div class="card">
+            <h4>Products</h4>
+            <div class="big">1,240</div>
+            <div class="chart"></div>
+          </div>
+
+          <div class="card">
+            <h4>Orders</h4>
+            <div class="big">540</div>
+            <div class="chart"></div>
+          </div>
+
+          <div class="card">
+            <h4>Customers</h4>
+            <div class="big">3,200</div>
+            <div class="chart"></div>
+          </div>
+
+        </div>
+
       </div>
+
     </div>
+
   </section>
 
-  <footer class="py-12 text-center border-t border-white/10 mt-20">
-    <p class="font-bold text-lg mb-2">CymorTechServices 2026</p>
-    <p class="text-slate-500">Site crafted by the Legendary Smiley Cymor</p>
+  <!-- FEATURES -->
+
+  <section id="features">
+
+    <div class="container">
+
+      <div class="section-title" data-aos="fade-up">
+
+        <h2>Everything Your Business Needs</h2>
+
+        <p>
+          EssDee Business Enterprise gives modern businesses powerful
+          tools to manage sales, inventory, staff and analytics
+          efficiently.
+        </p>
+
+      </div>
+
+      <div class="features-grid">
+
+        <div class="feature-card" data-aos="fade-up">
+
+          <div class="feature-icon">
+            <i class="fas fa-cash-register"></i>
+          </div>
+
+          <h3>Smart POS</h3>
+
+          <p>
+            Fast and touch-friendly point of sale system designed
+            for modern businesses and retail shops.
+          </p>
+
+        </div>
+
+        <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+
+          <div class="feature-icon">
+            <i class="fas fa-boxes"></i>
+          </div>
+
+          <h3>Inventory Management</h3>
+
+          <p>
+            Track stock levels, low inventory alerts and supplier
+            updates in real time.
+          </p>
+
+        </div>
+
+        <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+
+          <div class="feature-icon">
+            <i class="fas fa-chart-line"></i>
+          </div>
+
+          <h3>Advanced Analytics</h3>
+
+          <p>
+            Understand your business performance using smart reports
+            and powerful dashboards.
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- PRICING -->
+
+  <section id="pricing">
+
+    <div class="container">
+
+      <div class="section-title" data-aos="fade-up">
+
+        <h2>Flexible Pricing</h2>
+
+        <p>
+          Choose a plan that matches your business size and scale
+          as your business grows.
+        </p>
+
+      </div>
+
+      <div class="pricing-grid">
+
+        <div class="pricing-card" data-aos="fade-up">
+
+          <h3>Free</h3>
+
+          <div class="price">$0</div>
+
+          <ul>
+            <li>✔ Basic POS</li>
+            <li>✔ Limited Products</li>
+            <li>✔ 1 Employee</li>
+            <li>✔ Basic Reports</li>
+          </ul>
+
+          <a href="#" class="btn btn-outline">
+            Get Started
+          </a>
+
+        </div>
+
+        <div class="pricing-card" data-aos="fade-up" data-aos-delay="100">
+
+          <h3>Starter</h3>
+
+          <div class="price">$15</div>
+
+          <ul>
+            <li>✔ Unlimited Products</li>
+            <li>✔ Sales Reports</li>
+            <li>✔ Inventory Tracking</li>
+            <li>✔ Receipt Printing</li>
+          </ul>
+
+          <a href="#" class="btn btn-primary">
+            Choose Plan
+          </a>
+
+        </div>
+
+        <div class="pricing-card popular" data-aos="fade-up" data-aos-delay="200">
+
+          <div class="badge">
+            POPULAR
+          </div>
+
+          <h3>Medium</h3>
+
+          <div class="price">$35</div>
+
+          <ul>
+            <li>✔ WhatsApp Automation</li>
+            <li>✔ Employee Management</li>
+            <li>✔ Cloud Backup</li>
+            <li>✔ Advanced Analytics</li>
+          </ul>
+
+          <a href="#" class="btn btn-primary">
+            Choose Plan
+          </a>
+
+        </div>
+
+        <div class="pricing-card" data-aos="fade-up" data-aos-delay="300">
+
+          <h3>Pro</h3>
+
+          <div class="price">$79</div>
+
+          <ul>
+            <li>✔ Multi-Branch</li>
+            <li>✔ AI Insights</li>
+            <li>✔ Priority Support</li>
+            <li>✔ Full Automation</li>
+          </ul>
+
+          <a href="#" class="btn btn-primary">
+            Go Pro
+          </a>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- CTA -->
+
+  <section>
+
+    <div class="container">
+
+      <div class="cta" data-aos="zoom-in">
+
+        <h2>
+          Start Managing Your Business Smarter Today.
+        </h2>
+
+        <p>
+          Join modern businesses using EssDee Business Enterprise
+          to simplify operations, improve sales and grow faster.
+        </p>
+
+        <a href="auth/register.html" class="btn btn-outline">
+          Start Free
+        </a>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- FOOTER -->
+
+  <footer id="contact">
+
+    <div class="container footer-content">
+
+      <p>
+        © 2026 EssDee Business Enterprise.
+        Built by CymorTechServices × DavidTheDeveloper.
+      </p>
+
+      <div class="socials">
+
+        <a href="#">
+          <i class="fab fa-facebook-f"></i>
+        </a>
+
+        <a href="#">
+          <i class="fab fa-instagram"></i>
+        </a>
+
+        <a href="#">
+          <i class="fab fa-whatsapp"></i>
+        </a>
+
+        <a href="#">
+          <i class="fab fa-linkedin-in"></i>
+        </a>
+
+      </div>
+
+    </div>
+
   </footer>
 
+  <!-- AOS -->
+
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+
+  <script>
+
+    AOS.init({
+      duration:1000,
+      once:true
+    });
+
+  </script>
+<script type="module" src="../static/js/auth.js"></script>
 </body>
-</html>
+  </html>
