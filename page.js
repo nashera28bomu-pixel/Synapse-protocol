@@ -530,7 +530,7 @@ export default function LandingPage() {
               </p>
               <Link href="/chat">
                 <button className="btn-solid rounded-xl text-sm px-10 py-4">
-                  Open Cymor Free →
+                  Open Cymor Ai Code Assistant Free →
                 </button>
               </Link>
             </div>
@@ -546,11 +546,11 @@ export default function LandingPage() {
             <div className="font-display text-lg font-bold neon-text tracking-widest">CYMOR AI</div>
             <p className="text-white/30 text-sm text-center max-w-md font-mono">
               Elite coding intelligence. Built by{' '}
-              <span className="text-[#00FFD1]">Riel Kirote</span>.
+              <span className="text-[#00FFD1]">Legendary Smiley Cymor</span>.
               Free for every developer, everywhere.
             </p>
             <div className="flex items-center gap-6 text-white/20 text-xs font-mono">
-              <span>© 2025 Cymor AI</span>
+              <span>© 2026 Cymor AI Code Assistant</span>
               <span>·</span>
               <Link href="/chat" className="hover:text-[#00FFD1] transition-colors">Launch App</Link>
               <span>·</span>
