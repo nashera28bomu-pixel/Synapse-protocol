@@ -2,7 +2,7 @@
 
 > Write production-ready code. Debug like a machine. 100% Free.
 
-Built by **Riel Kirote** · Powered by Groq, Gemini, Qwen2.5-Coder & Claude
+Built by **Smiley Cymor** · Powered by Groq, Gemini, Qwen2.5-Coder & Claude
 
 ---
 
@@ -112,4 +112,4 @@ Built-in IP-based rate limiting: 60 requests per 5 minutes per user. After 40 re
 
 ---
 
-*Built with ❤️ by Riel Kirote*
+*Built with ❤️ by Smiley Cymor.C.E.O of CymorTechServices*
