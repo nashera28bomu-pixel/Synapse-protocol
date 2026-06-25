@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"/>
+<title>Dashboard — CymorGit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/globals.css"/>
+<style>
+/* Profile header */
+.profile-header {
+  padding: 24px 20px 20px;
+  background: linear-gradient(180deg, rgba(124,58,237,0.08) 0%, transparent 100%);
+  border-bottom: 1px solid var(--border);
+}
+.profile-row { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+.profile-av {
+  width: 60px; height: 60px; border-radius: 18px; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--violet), var(--cyan));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px; font-weight: 800;
+}
+.profile-info { flex: 1; min-width: 0; }
+.profile-name { font-family:'Space Grotesk',sans-serif; font-size: 20px; font-weight: 800; margin-bottom: 2px; }
+.profile-handle { font-size: 13px; color: var(--muted); font-family:'JetBrains Mono',monospace; margin-bottom: 6px; }
+.profile-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+.profile-bio { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 16px; }
+.profile-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
+.p-stat { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px; text-align: center; }
+.p-stat-n { font-family:'Space Grotesk',sans-serif; font-size: 18px; font-weight: 800; background: linear-gradient(90deg,var(--cyan),var(--violet2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.p-stat-l { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+/* Quick actions */
+.quick-actions { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; padding: 20px; }
+.qa-btn {
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 16px; display: flex; align-items: center; gap: 10px; cursor: pointer;
+  transition: all 0.2s; text-align: left;
+}
+.qa-btn:hover { border-color: rgba(0,212,255,0.3); transform: translateY(-1px); }
+.qa-icon { font-size: 22px; flex-shrink: 0; }
+.qa-text { flex: 1; min-width: 0; }
+.qa-label { font-family:'Space Grotesk',sans-serif; font-size: 13px; font-weight: 700; }
+.qa-sub   { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+/* Section */
+.dash-section { padding: 0 20px 24px; }
+.dash-section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.dash-section-title { font-family:'Space Grotesk',sans-serif; font-size: 16px; font-weight: 700; }
+.dash-section-link { font-size: 12px; color: var(--cyan); cursor: pointer; font-weight:600; }
+
+/* My repos */
+.my-repo-item {
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 14px; display: flex; align-items: center; gap: 12px; margin-bottom: 10px; cursor: pointer;
+  transition: all 0.2s;
+}
+.my-repo-item:hover { border-color: rgba(0,212,255,0.2); }
+.my-repo-ico { width: 40px; height: 40px; border-radius: 10px; background: rgba(124,58,237,0.15); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+.my-repo-info { flex: 1; min-width: 0; }
+.my-repo-name { font-family:'Space Grotesk',sans-serif; font-size: 13px; font-weight: 700; margin-bottom: 3px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.my-repo-meta { display: flex; gap: 8px; align-items: center; }
+.my-repo-lang { font-size: 11px; color: var(--muted); font-family:'JetBrains Mono',monospace; }
+.my-repo-stat { font-size: 11px; color: var(--muted); }
+.my-repo-actions { display: flex; flex-direction: column; gap: 5px; flex-shrink: 0; }
+
+/* Activity */
+.activity-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.activity-item:last-child { border-bottom: none; }
+.act-ico { width: 32px; height: 32px; border-radius: 8px; background: var(--card2); display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0; }
+.act-body { flex: 1; min-width: 0; }
+.act-text { font-size: 13px; line-height: 1.5; margin-bottom: 3px; }
+.act-text strong { color: var(--cyan); }
+.act-time { font-size: 11px; color: var(--muted); font-family:'JetBrains Mono',monospace; }
+
+/* Deploy status */
+.deploy-item {
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 14px; margin-bottom: 10px;
+}
+.deploy-row { display: flex; align-items: center; gap: 10px; }
+.deploy-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.deploy-dot.live    { background: var(--green); box-shadow: 0 0 6px var(--green); animation: livePulse 2s infinite; }
+.deploy-dot.building{ background: var(--yellow); animation: livePulse 1s infinite; }
+.deploy-dot.failed  { background: var(--red); }
+@keyframes livePulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+.deploy-name { font-family:'Space Grotesk',sans-serif; font-size: 13px; font-weight: 700; flex: 1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.deploy-platform { font-size: 11px; color: var(--muted); margin-top: 4px; font-family:'JetBrains Mono',monospace; }
+.deploy-url { font-size: 11px; color: var(--cyan); margin-top: 2px; word-break: break-all; }
+.deploy-status-label { font-size: 11px; padding: 3px 9px; border-radius: 99px; font-weight: 600; flex-shrink: 0; }
+.status-live    { background:rgba(16,185,129,0.15); color:var(--green); border:1px solid rgba(16,185,129,0.25); }
+.status-building{ background:rgba(245,158,11,0.15); color:var(--yellow); border:1px solid rgba(245,158,11,0.25);}
+.status-failed  { background:rgba(239,68,68,0.15); color:var(--red);   border:1px solid rgba(239,68,68,0.25); }
+
+/* AI usage */
+.ai-usage-card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:16px; margin-bottom:12px; }
+.ai-usage-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.ai-usage-label { font-size:13px; font-weight:600; }
+.ai-usage-count { font-size:13px; color:var(--muted); font-family:'JetBrains Mono',monospace; }
+.usage-bar { height:6px; background:rgba(255,255,255,0.08); border-radius:99px; overflow:hidden; margin-bottom:6px; }
+.usage-fill { height:100%; border-radius:99px; background:linear-gradient(90deg,var(--violet),var(--cyan)); }
+.usage-hint { font-size:11px; color:var(--muted); }
+
+/* Level card */
+.level-card {
+  background: linear-gradient(135deg,rgba(124,58,237,0.12),rgba(0,212,255,0.06));
+  border: 1px solid rgba(124,58,237,0.3); border-radius: var(--radius); padding: 16px;
+  margin-bottom: 12px; position:relative; overflow:hidden;
+}
+.level-card::before { content:''; position:absolute; top:-20px; right:-20px; width:100px; height:100px; background:radial-gradient(circle,rgba(124,58,237,0.2),transparent); }
+.level-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.level-badge { font-family:'Space Grotesk',sans-serif; font-size:22px; font-weight:800; background:linear-gradient(90deg,var(--cyan),var(--violet2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.level-xp { font-size:12px; color:var(--muted); text-align:right; }
+.level-bar { height:6px; background:rgba(255,255,255,0.1); border-radius:99px; overflow:hidden; }
+.level-fill { height:100%; border-radius:99px; background:linear-gradient(90deg,var(--violet),var(--cyan)); width:68%; }
+.level-hint { font-size:11px; color:var(--muted); margin-top:6px; }
+</style>
+</head>
+<body>
+
+<div id="mini-loader"><div class="mini-logo">CG</div><div class="mini-spinner"></div><div class="mini-msg" id="miniMsg">Loading...</div></div>
+<div id="toast"></div>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <div class="nav-logo-icon">CG</div>
+    <span class="nav-logo-text">CymorGit</span>
+  </a>
+  <div class="nav-actions">
+    <button class="nav-icon-btn" onclick="navigate('explore.html')" title="Explore">🔍</button>
+    <button class="nav-icon-btn" onclick="navigate('ai.html')" title="AI">🤖</button>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- Profile -->
+  <div class="profile-header">
+    <div class="profile-row">
+      <div class="profile-av">😎</div>
+      <div class="profile-info">
+        <div class="profile-name">Legendary Smiley</div>
+        <div class="profile-handle">@LegendarySmiley · Kenya 🇰🇪</div>
+        <div class="profile-badges">
+          <span class="badge badge-violet">⚡ Pro Dev</span>
+          <span class="badge badge-green">✓ Verified</span>
+        </div>
+      </div>
+    </div>
+    <div class="profile-bio">Founder of Cymor Tech Services. Building AI-powered tools for African developers. WhatsApp & Telegram bot specialist.</div>
+    <div class="profile-stats">
+      <div class="p-stat"><div class="p-stat-n">12</div><div class="p-stat-l">Repos</div></div>
+      <div class="p-stat"><div class="p-stat-n">510</div><div class="p-stat-l">Stars</div></div>
+      <div class="p-stat"><div class="p-stat-n">130</div><div class="p-stat-l">Forks</div></div>
+      <div class="p-stat"><div class="p-stat-n">360</div><div class="p-stat-l">Deploys</div></div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="quick-actions">
+    <button class="qa-btn" onclick="showToast('New repository form coming soon!')">
+      <span class="qa-icon">➕</span>
+      <div class="qa-text"><div class="qa-label">New Repo</div><div class="qa-sub">Create or import</div></div>
+    </button>
+    <button class="qa-btn" onclick="navigate('ai.html')">
+      <span class="qa-icon">🤖</span>
+      <div class="qa-text"><div class="qa-label">Ask AI</div><div class="qa-sub">Debug or explain</div></div>
+    </button>
+    <button class="qa-btn" onclick="navigate('explore.html')">
+      <span class="qa-icon">🔍</span>
+      <div class="qa-text"><div class="qa-label">Explore</div><div class="qa-sub">Browse bots</div></div>
+    </button>
+    <button class="qa-btn" onclick="navigate('deploy.html')">
+      <span class="qa-icon">🚀</span>
+      <div class="qa-text"><div class="qa-label">Deploy</div><div class="qa-sub">Go live now</div></div>
+    </button>
+  </div>
+
+  <!-- Developer Level -->
+  <div class="dash-section">
+    <div class="dash-section-header">
+      <div class="dash-section-title">🏆 Developer Level</div>
+    </div>
+    <div class="level-card">
+      <div class="level-row">
+        <div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:3px;font-family:'JetBrains Mono',monospace">CURRENT LEVEL</div>
+          <div class="level-badge">Level 7 · Bot Builder</div>
+        </div>
+        <div class="level-xp">1,340 / 2,000 XP<br/><span style="font-size:10px;color:var(--violet2)">660 XP to Level 8</span></div>
+      </div>
+      <div class="level-bar"><div class="level-fill"></div></div>
+      <div class="level-hint">Deploy 2 more repos to reach Level 8 · AI Engineer 🤖</div>
+    </div>
+  </div>
+
+  <!-- AI Usage -->
+  <div class="dash-section">
+    <div class="dash-section-header">
+      <div class="dash-section-title">🤖 AI Usage Today</div>
+      <span class="dash-section-link" onclick="showToast('Upgrade to Premium for unlimited AI!')">Upgrade ↗</span>
+    </div>
+    <div class="ai-usage-card">
+      <div class="ai-usage-row">
+        <span class="ai-usage-label">AI Queries</span>
+        <span class="ai-usage-count">14 / 20</span>
+      </div>
+      <div class="usage-bar"><div class="usage-fill" style="width:70%"></div></div>
+      <div class="usage-hint">6 queries remaining today · Resets at midnight</div>
+    </div>
+    <div class="ai-usage-card">
+      <div class="ai-usage-row">
+        <span class="ai-usage-label">Deployments</span>
+        <span class="ai-usage-count">1 / 3</span>
+      </div>
+      <div class="usage-bar"><div class="usage-fill" style="width:33%;background:linear-gradient(90deg,var(--green),#34d399)"></div></div>
+      <div class="usage-hint">2 deployments remaining this month</div>
+    </div>
+  </div>
+
+  <!-- My Repositories -->
+  <div class="dash-section">
+    <div class="dash-section-header">
+      <div class="dash-section-title">📁 My Repositories</div>
+      <span class="dash-section-link" onclick="showToast('New repository form coming soon!')">+ New</span>
+    </div>
+    <div id="myRepoList"></div>
+  </div>
+
+  <!-- Active Deployments -->
+  <div class="dash-section">
+    <div class="dash-section-header">
+      <div class="dash-section-title">🚀 Active Deployments</div>
+      <span class="dash-section-link" onclick="navigate('deploy.html')">View All</span>
+    </div>
+    <div class="deploy-item">
+      <div class="deploy-row">
+        <div class="deploy-dot live"></div>
+        <div style="flex:1;min-width:0">
+          <div class="deploy-name">Smiley MD Bot</div>
+          <div class="deploy-platform">🟣 Render · Node.js</div>
+          <div class="deploy-url">cymor-smiley-bot.onrender.com</div>
+        </div>
+        <span class="deploy-status-label status-live">● Live</span>
+      </div>
+    </div>
+    <div class="deploy-item">
+      <div class="deploy-row">
+        <div class="deploy-dot building"></div>
+        <div style="flex:1;min-width:0">
+          <div class="deploy-name">CymorPredict Bot</div>
+          <div class="deploy-platform">🚂 Railway · Node.js</div>
+          <div class="deploy-url">cymor-predict.railway.app</div>
+        </div>
+        <span class="deploy-status-label status-building">⟳ Building</span>
+      </div>
+    </div>
+    <div class="deploy-item">
+      <div class="deploy-row">
+        <div class="deploy-dot failed"></div>
+        <div style="flex:1;min-width:0">
+          <div class="deploy-name">Express API Starter</div>
+          <div class="deploy-platform">▲ Vercel · Node.js</div>
+          <div class="deploy-url">cymor-api.vercel.app</div>
+        </div>
+        <span class="deploy-status-label status-failed">✕ Failed</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Activity Feed -->
+  <div class="dash-section">
+    <div class="dash-section-header">
+      <div class="dash-section-title">📋 Recent Activity</div>
+    </div>
+    <div id="activityFeed"></div>
+  </div>
+
+  <div style="height:20px"></div>
+</div>
+
+<!-- Bottom Nav -->
+<nav class="bottom-nav">
+  <a class="bn-item" href="index.html"><span class="bn-icon">🏠</span><span class="bn-label">Home</span></a>
+  <button class="bn-item" onclick="navigate('explore.html')"><span class="bn-icon">🔍</span><span class="bn-label">Explore</span></button>
+  <button class="bn-item" onclick="navigate('ai.html')"><span class="bn-icon">🤖</span><span class="bn-label">AI</span></button>
+  <button class="bn-item" onclick="navigate('deploy.html')"><span class="bn-icon">🚀</span><span class="bn-label">Deploy</span></button>
+  <button class="bn-item active"><span class="bn-icon">👤</span><span class="bn-label">Profile</span></button>
+</nav>
+
+<script src="js/data.js"></script>
+<script>
+// My repos — first 3 from data
+const myRepos = CG.repos.filter(r => r.author === 'LegendarySmiley');
+document.getElementById('myRepoList').innerHTML = myRepos.map(r => `
+  <div class="my-repo-item" onclick="navigate('repo.html','?id=${r.id}')">
+    <div class="my-repo-ico">${r.authorAvatar}</div>
+    <div class="my-repo-info">
+      <div class="my-repo-name">${r.name}</div>
+      <div class="my-repo-meta">
+        <span class="my-repo-lang">${r.lang}</span>
+        <span class="my-repo-stat">⭐ ${r.stars}</span>
+        <span class="my-repo-stat">🚀 ${r.deploys}</span>
+      </div>
+    </div>
+    <div class="my-repo-actions">
+      <button class="btn-sm btn-deploy" onclick="event.stopPropagation();navigate('deploy.html','?id=${r.id}')">🚀</button>
+      <button class="btn-sm btn-view" onclick="event.stopPropagation();navigate('repo.html','?id=${r.id}')">Edit</button>
+    </div>
+  </div>
+`).join('');
+
+// Activity feed
+const activities = [
+  { icon:'🚀', text:'You deployed <strong>Smiley MD Bot</strong> to Render', time:'2 hours ago' },
+  { icon:'⭐', text:'<strong>DevNairobi</strong> starred your CymorPredict Bot', time:'5 hours ago' },
+  { icon:'🍴', text:'<strong>AfriDev</strong> forked your Smiley MD Bot', time:'1 day ago' },
+  { icon:'🤖', text:'AI fixed 2 security issues in <strong>Express API Starter</strong>', time:'1 day ago' },
+  { icon:'📦', text:'You uploaded <strong>CymorPredict Bot</strong> to the marketplace', time:'5 days ago' },
+];
+document.getElementById('activityFeed').innerHTML = activities.map(a => `
+  <div class="activity-item">
+    <div class="act-ico">${a.icon}</div>
+    <div class="act-body">
+      <div class="act-text">${a.text}</div>
+      <div class="act-time">${a.time}</div>
+    </div>
+  </div>
+`).join('');
+</script>
+</body>
+</html>

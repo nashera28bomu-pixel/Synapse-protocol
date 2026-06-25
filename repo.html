@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"/>
+<title>Repository — CymorGit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/globals.css"/>
+<style>
+.repo-hero {
+  padding: 20px;
+  background: linear-gradient(180deg, rgba(124,58,237,0.06) 0%, transparent 100%);
+  border-bottom: 1px solid var(--border);
+}
+.repo-breadcrumb {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; color: var(--muted); margin-bottom: 14px;
+  font-family: 'JetBrains Mono', monospace;
+}
+.repo-breadcrumb a { color: var(--cyan); text-decoration: none; }
+.repo-breadcrumb span { color: var(--muted); }
+
+.repo-top { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 12px; }
+.repo-avatar {
+  width: 50px; height: 50px; border-radius: 12px; flex-shrink: 0;
+  background: rgba(124,58,237,0.15);
+  display: flex; align-items: center; justify-content: center; font-size: 22px;
+}
+.repo-meta { flex: 1; min-width: 0; }
+.repo-name { font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 800; margin-bottom: 3px; }
+.repo-author { font-size: 12px; color: var(--muted); font-family: 'JetBrains Mono', monospace; margin-bottom: 8px; }
+.repo-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+.repo-desc { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 14px; }
+.repo-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+.repo-tag { font-size: 11px; color: var(--cyan); background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.15); padding: 3px 10px; border-radius: 99px; }
+
+.repo-stats-row { display: flex; gap: 16px; margin-bottom: 16px; }
+.repo-stat { display: flex; align-items: center; gap: 5px; font-size: 13px; color: var(--muted); }
+.repo-stat strong { color: var(--text); font-weight: 600; }
+
+.repo-action-btns { display: flex; gap: 8px; }
+.repo-action-btns .btn-primary { flex: 1; padding: 13px; font-size: 14px; text-align: center; }
+.repo-action-btns .btn-ghost   { flex: 1; padding: 13px; font-size: 14px; text-align: center; }
+
+/* Tab nav */
+.tab-nav {
+  display: flex; overflow-x: auto; border-bottom: 1px solid var(--border);
+  scrollbar-width: none; padding: 0 20px;
+}
+.tab-nav::-webkit-scrollbar { display: none; }
+.tab-item {
+  padding: 12px 16px; font-size: 13px; font-weight: 600; color: var(--muted);
+  cursor: pointer; white-space: nowrap; border-bottom: 2px solid transparent;
+  transition: all 0.2s; font-family: 'Inter', sans-serif;
+  background: none; border-left: none; border-right: none; border-top: none;
+  flex-shrink: 0;
+}
+.tab-item.active { color: var(--cyan); border-bottom-color: var(--cyan); }
+.tab-item:hover:not(.active) { color: var(--text); }
+
+/* Tab panels */
+.tab-panel { display: none; padding: 20px; }
+.tab-panel.active { display: block; }
+
+/* Files */
+.file-list { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.file-item {
+  display: flex; align-items: center; gap: 10px; padding: 12px 14px;
+  border-bottom: 1px solid var(--border); transition: background 0.15s; cursor: pointer;
+}
+.file-item:last-child { border-bottom: none; }
+.file-item:hover { background: rgba(255,255,255,0.03); }
+.file-icon { font-size: 14px; width: 20px; text-align: center; flex-shrink: 0; }
+.file-name { flex: 1; font-size: 13px; font-family: 'JetBrains Mono', monospace; color: var(--text); }
+.file-size { font-size: 11px; color: var(--muted); }
+
+/* README */
+.readme-box {
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+}
+.readme-header {
+  padding: 12px 16px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; font-weight: 600; color: var(--muted);
+}
+.readme-body { padding: 16px; font-size: 13px; line-height: 1.8; color: var(--muted); }
+.readme-body h1 { font-family:'Space Grotesk',sans-serif; font-size:18px; font-weight:800; color:var(--text); margin-bottom:10px; }
+.readme-body h2 { font-family:'Space Grotesk',sans-serif; font-size:15px; font-weight:700; color:var(--text); margin:14px 0 8px; }
+.readme-body p  { margin-bottom:10px; }
+.readme-body ul { padding-left:16px; margin-bottom:10px; }
+.readme-body li { margin-bottom:4px; }
+.readme-body pre {
+  background: var(--bg); border: 1px solid var(--border); border-radius:8px;
+  padding:12px; font-family:'JetBrains Mono',monospace; font-size:12px;
+  overflow-x:auto; margin:10px 0; white-space:pre-wrap; word-break:break-all;
+}
+.readme-body code {
+  background:rgba(0,212,255,0.08); padding:1px 6px; border-radius:4px;
+  font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--cyan);
+}
+
+/* AI Analysis */
+.ai-scores-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 16px; margin-bottom: 12px;
+}
+.ai-scores-title { font-family:'Space Grotesk',sans-serif; font-size:14px; font-weight:700; margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+.score-row { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+.score-label { font-size:12px; color:var(--muted); width:90px; flex-shrink:0; }
+.score-bar2 { flex:1; height:6px; background:rgba(255,255,255,0.08); border-radius:99px; overflow:hidden; }
+.score-fill2 { height:100%; border-radius:99px; transition:width 0.8s ease; }
+.score-pct { font-size:12px; font-family:'JetBrains Mono',monospace; width:32px; text-align:right; flex-shrink:0; }
+
+.ai-issues { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:16px; margin-bottom:12px; }
+.issue-item { display:flex; gap:10px; padding:10px 0; border-bottom:1px solid var(--border); }
+.issue-item:last-child { border-bottom:none; padding-bottom:0; }
+.issue-ico { font-size:14px; flex-shrink:0; margin-top:1px; }
+.issue-body { flex:1; }
+.issue-title { font-size:13px; font-weight:600; margin-bottom:3px; }
+.issue-desc  { font-size:12px; color:var(--muted); line-height:1.5; }
+.issue-sev   { font-size:10px; padding:2px 8px; border-radius:99px; font-weight:600; margin-top:5px; display:inline-block; }
+.sev-high   { background:rgba(239,68,68,0.15);  color:var(--red);    border:1px solid rgba(239,68,68,0.25); }
+.sev-med    { background:rgba(245,158,11,0.15); color:var(--yellow); border:1px solid rgba(245,158,11,0.25);}
+.sev-low    { background:rgba(16,185,129,0.15); color:var(--green);  border:1px solid rgba(16,185,129,0.25);}
+
+.env-card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:16px; margin-bottom:12px; }
+.env-title { font-family:'Space Grotesk',sans-serif; font-size:14px; font-weight:700; margin-bottom:12px; }
+.env-var {
+  display:flex; align-items:center; gap:10px; padding:8px 12px; margin-bottom:6px;
+  background:var(--bg); border:1px solid var(--border); border-radius:8px;
+  font-family:'JetBrains Mono',monospace; font-size:12px;
+}
+.env-key { flex:1; color:var(--cyan); }
+.env-req { font-size:10px; padding:2px 7px; border-radius:99px; font-weight:600; background:rgba(239,68,68,0.12); color:var(--red); border:1px solid rgba(239,68,68,0.2); }
+
+/* Commits */
+.commit-list { display:flex; flex-direction:column; gap:1px; }
+.commit-item { background:var(--card); border:1px solid var(--border); padding:14px 16px; border-radius:0; }
+.commit-item:first-child { border-radius:var(--radius) var(--radius) 0 0; }
+.commit-item:last-child  { border-radius:0 0 var(--radius) var(--radius); }
+.commit-msg  { font-size:13px; font-weight:600; margin-bottom:4px; }
+.commit-meta { font-size:11px; color:var(--muted); font-family:'JetBrains Mono',monospace; display:flex; gap:10px; }
+.commit-hash { color:var(--cyan); }
+
+/* Sticky deploy bar */
+.sticky-deploy {
+  position: fixed; bottom: 64px; left: 0; right: 0; z-index: 200;
+  padding: 12px 20px;
+  background: rgba(8,12,24,0.95); backdrop-filter:blur(16px);
+  border-top: 1px solid var(--border);
+  display: flex; gap: 10px;
+}
+.sticky-deploy .btn-primary { flex:1; padding:13px; font-size:14px; }
+.sticky-deploy .btn-ghost   { padding:13px 16px; font-size:14px; }
+</style>
+</head>
+<body>
+
+<div id="mini-loader"><div class="mini-logo">CG</div><div class="mini-spinner"></div><div class="mini-msg" id="miniMsg">Loading...</div></div>
+<div id="toast"></div>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <div class="nav-logo-icon">CG</div>
+    <span class="nav-logo-text">CymorGit</span>
+  </a>
+  <div class="nav-actions">
+    <button class="nav-icon-btn" onclick="navigate('explore.html')" title="Search">🔍</button>
+    <button class="btn-primary" onclick="navigate('dashboard.html')">Dashboard</button>
+  </div>
+</nav>
+
+<div class="page" id="repoPage">
+  <!-- dynamically rendered -->
+</div>
+
+<!-- Sticky Deploy Bar -->
+<div class="sticky-deploy" id="stickyDeploy">
+  <button class="btn-primary" id="deployBtn" onclick="">🚀 Deploy Now</button>
+  <button class="btn-ghost" onclick="navigate('ai.html')">🤖 Ask AI</button>
+</div>
+
+<!-- Bottom Nav -->
+<nav class="bottom-nav">
+  <a class="bn-item" href="index.html"><span class="bn-icon">🏠</span><span class="bn-label">Home</span></a>
+  <button class="bn-item" onclick="navigate('explore.html')"><span class="bn-icon">🔍</span><span class="bn-label">Explore</span></button>
+  <button class="bn-item" onclick="navigate('ai.html')"><span class="bn-icon">🤖</span><span class="bn-label">AI</span></button>
+  <button class="bn-item" onclick="navigate('deploy.html')"><span class="bn-icon">🚀</span><span class="bn-label">Deploy</span></button>
+  <button class="bn-item" onclick="navigate('dashboard.html')"><span class="bn-icon">👤</span><span class="bn-label">Profile</span></button>
+</nav>
+
+<script src="js/data.js"></script>
+<script>
+const params = new URLSearchParams(window.location.search);
+const repoId = parseInt(params.get('id')) || 1;
+const repo   = CG.repos.find(r => r.id === repoId) || CG.repos[0];
+
+document.title = repo.name + ' — CymorGit';
+document.getElementById('deployBtn').onclick = () => navigate('deploy.html', '?id=' + repo.id);
+
+const LANG_COLORS = {
+  'JavaScript':'#f7df1e','TypeScript':'#3178c6','Python':'#3572a5','HTML/CSS/JS':'#e34c26'
+};
+
+function scoreColor(s) {
+  if (s >= 90) return 'linear-gradient(90deg,#10b981,#34d399)';
+  if (s >= 75) return 'linear-gradient(90deg,#f59e0b,#fbbf24)';
+  return 'linear-gradient(90deg,#ef4444,#f87171)';
+}
+
+function renderReadme(md) {
+  return md
+    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+    .replace(/```([\s\S]*?)```/g, '<pre>$1</pre>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/^- (.+)$/gm, '<li>$1</li>')
+    .replace(/(<li>.*<\/li>\n?)+/g, s => `<ul>${s}</ul>`)
+    .replace(/\n\n/g, '<br/><br/>');
+}
+
+const fakeCommits = [
+  { hash:'a3f82c1', msg:'fix: update session handler for reconnection', author:'@'+repo.author, time:'2 hours ago' },
+  { hash:'b9e14d2', msg:'feat: add AI error detection module', author:'@'+repo.author, time:'1 day ago'    },
+  { hash:'c72f8a9', msg:'chore: update dependencies to latest', author:'@'+repo.author, time:'3 days ago'  },
+  { hash:'d1c49b3', msg:'fix: resolve MongoDB connection timeout', author:'@'+repo.author, time:'5 days ago'  },
+  { hash:'e88a2f7', msg:'feat: initial project setup', author:'@'+repo.author, time:'1 week ago'  },
+];
+
+const page = document.getElementById('repoPage');
+page.innerHTML = `
+  <!-- Hero -->
+  <div class="repo-hero">
+    <div class="repo-breadcrumb">
+      <a href="explore.html">Explore</a>
+      <span>/</span>
+      <span>${repo.author}</span>
+      <span>/</span>
+      <span style="color:var(--text)">${repo.name}</span>
+    </div>
+    <div class="repo-top">
+      <div class="repo-avatar">${repo.authorAvatar}</div>
+      <div class="repo-meta">
+        <div class="repo-name">${repo.name}</div>
+        <div class="repo-author">@${repo.author} · Updated ${repo.updated}</div>
+        <div class="repo-badges">
+          <span class="badge ${getBadgeClass(repo.badge)}">${getBadgeLabel(repo.badge)}</span>
+          ${repo.beginner ? '<span class="badge badge-cyan">🎓 Beginner</span>' : ''}
+          <span class="badge badge-violet">📦 ${repo.lang}</span>
+        </div>
+      </div>
+    </div>
+    <div class="repo-desc">${repo.desc}</div>
+    <div class="repo-tags">${repo.tags.map(t=>`<span class="repo-tag">#${t}</span>`).join('')}</div>
+    <div class="repo-stats-row">
+      <div class="repo-stat">⭐ <strong>${repo.stars}</strong> Stars</div>
+      <div class="repo-stat">🍴 <strong>${repo.forks}</strong> Forks</div>
+      <div class="repo-stat">🚀 <strong>${repo.deploys}</strong> Deploys</div>
+    </div>
+    <div class="repo-action-btns">
+      <button class="btn-ghost" onclick="showToast('Repository starred! ⭐')">⭐ Star</button>
+      <button class="btn-ghost" onclick="showToast('Repository forked! 🍴')">🍴 Fork</button>
+      <button class="btn-ghost" onclick="showToast('Link copied! 📋')">📋 Share</button>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tab-nav">
+    <button class="tab-item active" onclick="switchTab(this,'readme')">📄 README</button>
+    <button class="tab-item" onclick="switchTab(this,'files')">📁 Files</button>
+    <button class="tab-item" onclick="switchTab(this,'ai')">🤖 AI Analysis</button>
+    <button class="tab-item" onclick="switchTab(this,'commits')">📝 Commits</button>
+    <button class="tab-item" onclick="switchTab(this,'deploy')">🚀 Deploy</button>
+  </div>
+
+  <!-- README -->
+  <div class="tab-panel active" id="tab-readme">
+    <div class="readme-box">
+      <div class="readme-header">📄 README.md</div>
+      <div class="readme-body">${renderReadme(repo.readme)}</div>
+    </div>
+  </div>
+
+  <!-- Files -->
+  <div class="tab-panel" id="tab-files">
+    <div class="file-list">
+      ${repo.files.map(f => {
+        const isDir = f.endsWith('/');
+        const icon  = isDir ? '📁' : f.endsWith('.js') ? '📜' : f.endsWith('.json') ? '📋' : f.endsWith('.md') ? '📄' : f.endsWith('.env.example') ? '🔒' : f.endsWith('.py') ? '🐍' : '📄';
+        return `<div class="file-item" onclick="showToast('${f} — viewing in editor coming soon')">
+          <span class="file-icon">${icon}</span>
+          <span class="file-name">${f}</span>
+          <span class="file-size">${isDir ? 'directory' : Math.floor(Math.random()*80+2)+'KB'}</span>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>
+
+  <!-- AI Analysis -->
+  <div class="tab-panel" id="tab-ai">
+    <div class="ai-scores-card">
+      <div class="ai-scores-title">🤖 AI Quality Report</div>
+      ${[['Security',repo.security],['Performance',repo.performance],['Code Quality',repo.quality],['Maintainability',Math.floor((repo.quality+repo.performance)/2)]].map(([l,v])=>`
+        <div class="score-row">
+          <span class="score-label">${l}</span>
+          <div class="score-bar2"><div class="score-fill2" style="width:${v}%;background:${scoreColor(v)}"></div></div>
+          <span class="score-pct" style="color:${v>=90?'var(--green)':v>=75?'var(--yellow)':'var(--red)'}">${v}%</span>
+        </div>`).join('')}
+      <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap">
+        ${repo.beginner ? '<span class="badge badge-green">🎓 Beginner Friendly</span>' : '<span class="badge badge-yellow">⚡ Intermediate</span>'}
+        <span class="badge badge-green">✓ Deploy Ready</span>
+        <span class="badge badge-cyan">🔧 ${repo.framework}</span>
+      </div>
+    </div>
+
+    <div class="ai-issues">
+      <div class="ai-scores-title" style="font-size:14px">🔍 Issues Found</div>
+      <div class="issue-item">
+        <span class="issue-ico">⚠️</span>
+        <div class="issue-body">
+          <div class="issue-title">Hardcoded timeout values</div>
+          <div class="issue-desc">Reconnection timeout is hardcoded. Move to config or environment variable for flexibility.</div>
+          <span class="issue-sev sev-med">Medium</span>
+        </div>
+      </div>
+      <div class="issue-item">
+        <span class="issue-ico">🔒</span>
+        <div class="issue-body">
+          <div class="issue-title">Missing input sanitization</div>
+          <div class="issue-desc">User inputs in command handlers are not sanitized before processing.</div>
+          <span class="issue-sev sev-high">High</span>
+        </div>
+      </div>
+      <div class="issue-item">
+        <span class="issue-ico">💡</span>
+        <div class="issue-body">
+          <div class="issue-title">No error logging system</div>
+          <div class="issue-desc">Errors are only console.log'd. Consider adding structured logging.</div>
+          <span class="issue-sev sev-low">Low</span>
+        </div>
+      </div>
+      <button class="btn-primary" style="width:100%;margin-top:14px" onclick="navigate('ai.html','?repo=${repo.id}')">🤖 Fix All Issues with AI</button>
+    </div>
+
+    ${repo.envVars.length > 0 ? `
+    <div class="env-card">
+      <div class="env-title">🔑 Required ENV Variables</div>
+      ${repo.envVars.map(v=>`
+        <div class="env-var">
+          <span class="env-key">${v}</span>
+          <span class="env-req">Required</span>
+        </div>`).join('')}
+      <button class="btn-ghost" style="width:100%;margin-top:12px" onclick="showToast('AI is generating .env template...')">✨ AI Generate .env Template</button>
+    </div>` : ''}
+  </div>
+
+  <!-- Commits -->
+  <div class="tab-panel" id="tab-commits">
+    <div class="commit-list">
+      ${fakeCommits.map(c=>`
+        <div class="commit-item">
+          <div class="commit-msg">${c.msg}</div>
+          <div class="commit-meta">
+            <span class="commit-hash">${c.hash}</span>
+            <span>${c.author}</span>
+            <span>${c.time}</span>
+          </div>
+        </div>`).join('')}
+    </div>
+  </div>
+
+  <!-- Deploy tab -->
+  <div class="tab-panel" id="tab-deploy">
+    <div style="margin-bottom:16px">
+      <div class="section-label">// Choose Platform</div>
+      <h3 style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:800;margin-bottom:8px">Deploy ${repo.name}</h3>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:20px">AI will configure all settings before deployment.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px">
+      ${CG.deployPlatforms.map(p=>`
+        <div class="dep-card" onclick="navigate('deploy.html','?id=${repo.id}&platform=${p.id}')" style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;transition:all 0.2s">
+          <div style="font-size:24px">${p.icon}</div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;text-align:center">${p.name}</div>
+          <div style="font-size:9px;color:${p.free?'var(--green)':'var(--yellow)'};font-weight:600">${p.free?'Free':'Paid'}</div>
+        </div>`).join('')}
+    </div>
+    <button class="btn-primary" style="width:100%;padding:14px" onclick="navigate('deploy.html','?id=${repo.id}')">🚀 Open Full Deploy Wizard</button>
+  </div>
+
+  <div style="height:140px"></div>
+`;
+
+function switchTab(el, tab) {
+  document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+}
+</script>
+</body>
+</html>

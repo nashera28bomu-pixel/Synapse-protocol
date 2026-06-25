@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"/>
+<title>Explore — CymorGit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/globals.css"/>
+<style>
+.explore-header { padding: 20px 20px 0; }
+.explore-title { font-family:'Space Grotesk',sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+.explore-sub   { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+
+/* Search box */
+.search-wrap {
+  position: relative; width: 100%; margin-bottom: 14px;
+}
+.search-input {
+  width: 100%; background: rgba(255,255,255,0.05);
+  border: 1.5px solid var(--border2); border-radius: var(--radius);
+  padding: 13px 44px 13px 44px; font-size: 15px; color: var(--text);
+  font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.2s;
+}
+.search-input:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(0,212,255,0.08); }
+.search-input::placeholder { color: var(--muted); }
+.search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 16px; pointer-events: none; }
+.search-clear {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  background: rgba(255,255,255,0.08); border: none; color: var(--muted);
+  width: 24px; height: 24px; border-radius: 50%; font-size: 12px; cursor: pointer;
+  display: none; align-items: center; justify-content: center; transition: all 0.2s;
+}
+.search-clear.visible { display: flex; }
+.search-clear:hover { background: rgba(255,255,255,0.15); color: var(--text); }
+
+/* Filters row */
+.filters-row {
+  display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 14px;
+  scrollbar-width: none;
+}
+.filters-row::-webkit-scrollbar { display: none; }
+.filter-chip {
+  padding: 7px 14px; border-radius: 99px; font-size: 12px; font-weight: 600;
+  border: 1px solid var(--border); background: transparent; color: var(--muted);
+  cursor: pointer; white-space: nowrap; transition: all 0.2s; flex-shrink: 0;
+  font-family: 'Inter', sans-serif;
+}
+.filter-chip.active {
+  background: linear-gradient(135deg, var(--violet), var(--cyan));
+  border-color: transparent; color: #fff;
+}
+.filter-chip:hover:not(.active) { border-color: rgba(0,212,255,0.3); color: var(--cyan); }
+
+/* Second filter row */
+.filter-row2 {
+  display: flex; gap: 8px; margin-bottom: 14px; align-items: center;
+}
+.select-wrap { position: relative; flex: 1; }
+.select-wrap select {
+  width: 100%; appearance: none; background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 9px 30px 9px 12px; font-size: 12px; color: var(--text);
+  font-family: 'Inter', sans-serif; outline: none; cursor: pointer; transition: border-color 0.2s;
+}
+.select-wrap select:focus { border-color: var(--cyan); }
+.select-wrap::after {
+  content: '▾'; position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  font-size: 11px; color: var(--muted); pointer-events: none;
+}
+.select-wrap select option { background: var(--card); color: var(--text); }
+
+/* Filter toggles */
+.toggle-row { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.toggle-btn {
+  display: flex; align-items: center; gap: 6px; padding: 7px 12px;
+  border-radius: 99px; font-size: 11px; font-weight: 600;
+  border: 1px solid var(--border); background: transparent; color: var(--muted);
+  cursor: pointer; transition: all 0.2s; font-family: 'Inter', sans-serif; flex-shrink: 0;
+}
+.toggle-btn.on { border-color: var(--green); color: var(--green); background: rgba(16,185,129,0.1); }
+.toggle-btn .tog-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); transition: background 0.2s; }
+.toggle-btn.on .tog-dot { background: var(--green); }
+
+/* Results info */
+.results-info {
+  padding: 0 20px 12px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.results-count { font-size: 13px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+.results-count span { color: var(--cyan); font-weight: 600; }
+.view-toggle { display: flex; gap: 4px; }
+.view-btn {
+  width: 32px; height: 32px; border-radius: var(--radius-sm);
+  background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; cursor: pointer; color: var(--muted); transition: all 0.2s;
+}
+.view-btn.active { border-color: var(--cyan); color: var(--cyan); background: rgba(0,212,255,0.08); }
+
+/* Repo cards */
+.repo-list { padding: 0 20px; display: flex; flex-direction: column; gap: 12px; }
+.repo-grid { padding: 0 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.repo-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px; transition: all 0.25s; cursor: pointer;
+  text-decoration: none; color: inherit; display: block; width: 100%;
+}
+.repo-card:hover { border-color: rgba(0,212,255,0.25); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
+
+/* List view */
+.repo-card-list { display: flex; gap: 12px; align-items: flex-start; }
+.repo-card-list .rc-avatar {
+  width: 42px; height: 42px; border-radius: 10px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 18px;
+  background: rgba(124,58,237,0.12);
+}
+.repo-card-list .rc-body { flex: 1; min-width: 0; }
+.rc-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
+.rc-name { font-family:'Space Grotesk',sans-serif; font-size: 14px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rc-author { font-size: 11px; color: var(--muted); margin-bottom: 6px; font-family:'JetBrains Mono',monospace; }
+.rc-desc { font-size: 12px; color: var(--muted); line-height: 1.5; margin-bottom: 10px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.rc-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px; }
+.rc-tag { font-size: 10px; color: var(--cyan); background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.15); padding: 2px 8px; border-radius: 99px; }
+.rc-footer { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.rc-stat { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--muted); }
+.rc-lang { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); font-family:'JetBrains Mono',monospace; }
+.lang-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+/* AI Score bars */
+.ai-scores { margin: 10px 0; display: flex; flex-direction: column; gap: 6px; }
+.ai-score-row { display: flex; align-items: center; gap: 8px; }
+.ai-score-label { font-size: 10px; color: var(--muted); width: 70px; flex-shrink: 0; }
+.ai-score-bar { flex: 1; height: 3px; background: rgba(255,255,255,0.08); border-radius: 99px; overflow: hidden; }
+.ai-score-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--violet), var(--cyan)); }
+.ai-score-pct { font-size: 10px; color: var(--cyan); width: 28px; text-align: right; flex-shrink: 0; font-family:'JetBrains Mono',monospace; }
+
+/* Grid card */
+.repo-card-grid .rc-name { font-size: 13px; white-space: normal; -webkit-line-clamp: 2; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; }
+.repo-card-grid .gc-avatar { font-size: 24px; margin-bottom: 8px; }
+.repo-card-grid .rc-desc { font-size: 11px; -webkit-line-clamp: 3; }
+
+/* Deploy card actions */
+.rc-actions { display: flex; gap: 6px; margin-top: 10px; }
+.rc-actions .btn-sm { flex: 1; text-align: center; }
+
+/* No results */
+.no-results { padding: 48px 20px; text-align: center; }
+.no-results-icon { font-size: 48px; margin-bottom: 12px; }
+.no-results-title { font-family:'Space Grotesk',sans-serif; font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+.no-results-desc { font-size: 14px; color: var(--muted); }
+
+/* Skeleton */
+.skeleton { background: linear-gradient(90deg, var(--card) 25%, var(--card2) 50%, var(--card) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; }
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+.skel-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; display: flex; gap: 12px; }
+.skel-av { width: 42px; height: 42px; border-radius: 10px; flex-shrink: 0; }
+.skel-body { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.skel-line { height: 10px; border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<div id="mini-loader">
+  <div class="mini-logo">CG</div>
+  <div class="mini-spinner"></div>
+  <div class="mini-msg" id="miniMsg">Loading...</div>
+</div>
+<div id="toast"></div>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <div class="nav-logo-icon">CG</div>
+    <span class="nav-logo-text">CymorGit</span>
+  </a>
+  <div class="nav-actions">
+    <button class="nav-icon-btn" onclick="navigate('ai.html')" title="AI Assistant">🤖</button>
+    <button class="btn-primary" onclick="navigate('dashboard.html')">Dashboard</button>
+  </div>
+</nav>
+
+<div class="page">
+  <!-- Header & Search -->
+  <div class="explore-header">
+    <div class="explore-title">🔍 Explore Repositories</div>
+    <div class="explore-sub">Discover, clone, and deploy from <span style="color:var(--cyan)">2,400+</span> repositories</div>
+
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" id="searchInput" type="text" placeholder="Search repos, bots, languages..." autocomplete="off" oninput="onSearch()"/>
+      <button class="search-clear" id="clearBtn" onclick="clearSearch()">✕</button>
+    </div>
+
+    <!-- Category filters -->
+    <div class="filters-row" id="catFilters">
+      <button class="filter-chip active" onclick="setCat(this,'all')">🌐 All</button>
+      <button class="filter-chip" onclick="setCat(this,'whatsapp')">🟢 WhatsApp</button>
+      <button class="filter-chip" onclick="setCat(this,'telegram')">✈️ Telegram</button>
+      <button class="filter-chip" onclick="setCat(this,'discord')">💬 Discord</button>
+      <button class="filter-chip" onclick="setCat(this,'website')">🖥 Websites</button>
+      <button class="filter-chip" onclick="setCat(this,'api')">📦 APIs</button>
+    </div>
+
+    <!-- Language & Sort -->
+    <div class="filter-row2">
+      <div class="select-wrap">
+        <select id="langSelect" onchange="render()">
+          <option>All Languages</option>
+          <option>JavaScript</option>
+          <option>TypeScript</option>
+          <option>Python</option>
+          <option>HTML/CSS/JS</option>
+        </select>
+      </div>
+      <div class="select-wrap">
+        <select id="sortSelect" onchange="render()">
+          <option>Most Stars</option>
+          <option>Most Deployed</option>
+          <option>Highest AI Score</option>
+          <option>Recently Updated</option>
+          <option>Most Forks</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Toggle filters -->
+    <div class="toggle-row">
+      <button class="toggle-btn" id="verifiedToggle" onclick="toggleFilter('verified')">
+        <div class="tog-dot"></div> Verified Only
+      </button>
+      <button class="toggle-btn" id="beginnerToggle" onclick="toggleFilter('beginner')">
+        <div class="tog-dot"></div> Beginner Friendly
+      </button>
+      <button class="toggle-btn" id="deployToggle" onclick="toggleFilter('deploy')">
+        <div class="tog-dot"></div> Deploy Ready
+      </button>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div class="results-info">
+    <div class="results-count">Showing <span id="resultCount">0</span> repositories</div>
+    <div class="view-toggle">
+      <button class="view-btn active" id="listViewBtn" onclick="setView('list')" title="List view">☰</button>
+      <button class="view-btn" id="gridViewBtn" onclick="setView('grid')" title="Grid view">⊞</button>
+    </div>
+  </div>
+
+  <div id="repoResults" class="repo-list"></div>
+</div>
+
+<!-- Bottom Nav -->
+<nav class="bottom-nav">
+  <a class="bn-item" href="index.html"><span class="bn-icon">🏠</span><span class="bn-label">Home</span></a>
+  <button class="bn-item active" onclick=""><span class="bn-icon">🔍</span><span class="bn-label">Explore</span></button>
+  <button class="bn-item" onclick="navigate('ai.html')"><span class="bn-icon">🤖</span><span class="bn-label">AI</span></button>
+  <button class="bn-item" onclick="navigate('deploy.html')"><span class="bn-icon">🚀</span><span class="bn-label">Deploy</span></button>
+  <button class="bn-item" onclick="navigate('dashboard.html')"><span class="bn-icon">👤</span><span class="bn-label">Profile</span></button>
+</nav>
+
+<script src="js/data.js"></script>
+<script>
+let currentCat = 'all';
+let verifiedOnly = false;
+let beginnerOnly = false;
+let deployReady  = false;
+let currentView  = 'list';
+
+const LANG_COLORS = {
+  'JavaScript':'#f7df1e','TypeScript':'#3178c6','Python':'#3572a5','HTML/CSS/JS':'#e34c26'
+};
+
+function onSearch() {
+  const val = document.getElementById('searchInput').value;
+  document.getElementById('clearBtn').classList.toggle('visible', val.length > 0);
+  render();
+}
+
+function clearSearch() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('clearBtn').classList.remove('visible');
+  render();
+}
+
+function setCat(el, cat) {
+  currentCat = cat;
+  document.querySelectorAll('#catFilters .filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  render();
+}
+
+function toggleFilter(type) {
+  if (type === 'verified') { verifiedOnly = !verifiedOnly; document.getElementById('verifiedToggle').classList.toggle('on', verifiedOnly); }
+  if (type === 'beginner') { beginnerOnly = !beginnerOnly; document.getElementById('beginnerToggle').classList.toggle('on', beginnerOnly); }
+  if (type === 'deploy')   { deployReady  = !deployReady;  document.getElementById('deployToggle').classList.toggle('on',  deployReady);  }
+  render();
+}
+
+function setView(v) {
+  currentView = v;
+  document.getElementById('listViewBtn').classList.toggle('active', v==='list');
+  document.getElementById('gridViewBtn').classList.toggle('active', v==='grid');
+  render();
+}
+
+function render() {
+  const q    = document.getElementById('searchInput').value;
+  const lang = document.getElementById('langSelect').value;
+  const sort = document.getElementById('sortSelect').value;
+
+  let results = searchRepos(q, currentCat, lang, sort);
+
+  if (verifiedOnly) results = results.filter(r => r.badge === 'verified');
+  if (beginnerOnly) results = results.filter(r => r.beginner === true);
+  if (deployReady)  results = results.filter(r => r.deployTargets.length > 0);
+
+  document.getElementById('resultCount').textContent = results.length;
+  const container = document.getElementById('repoResults');
+  container.className = currentView === 'grid' ? 'repo-grid' : 'repo-list';
+
+  if (results.length === 0) {
+    container.innerHTML = `
+      <div class="no-results" style="grid-column:1/-1">
+        <div class="no-results-icon">🔭</div>
+        <div class="no-results-title">No repositories found</div>
+        <div class="no-results-desc">Try different keywords, category, or clear your filters.</div>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = results.map(r => currentView === 'grid' ? renderGrid(r) : renderList(r)).join('');
+}
+
+function renderList(r) {
+  const color = LANG_COLORS[r.lang] || '#94a3b8';
+  return `
+    <div class="repo-card repo-card-list" onclick="navigate('repo.html','?id=${r.id}')">
+      <div class="rc-avatar">${r.authorAvatar}</div>
+      <div class="rc-body">
+        <div class="rc-top">
+          <div class="rc-name">${r.name}</div>
+          <span class="badge ${getBadgeClass(r.badge)}">${getBadgeLabel(r.badge)}</span>
+        </div>
+        <div class="rc-author">@${r.author}</div>
+        <div class="rc-desc">${r.desc}</div>
+        <div class="rc-tags">${r.tags.slice(0,3).map(t=>`<span class="rc-tag">#${t}</span>`).join('')}</div>
+        <div class="ai-scores">
+          <div class="ai-score-row">
+            <span class="ai-score-label">Security</span>
+            <div class="ai-score-bar"><div class="ai-score-fill" style="width:${r.security}%"></div></div>
+            <span class="ai-score-pct">${r.security}%</span>
+          </div>
+          <div class="ai-score-row">
+            <span class="ai-score-label">Quality</span>
+            <div class="ai-score-bar"><div class="ai-score-fill" style="width:${r.quality}%"></div></div>
+            <span class="ai-score-pct">${r.quality}%</span>
+          </div>
+        </div>
+        <div class="rc-footer">
+          <div class="rc-stat">⭐ ${r.stars}</div>
+          <div class="rc-stat">🍴 ${r.forks}</div>
+          <div class="rc-stat">🚀 ${r.deploys}</div>
+          <div class="rc-lang"><div class="lang-dot" style="background:${color}"></div>${r.lang}</div>
+          ${r.beginner ? '<span style="font-size:10px;color:var(--green)">● Beginner</span>' : ''}
+        </div>
+        <div class="rc-actions">
+          <button class="btn-sm btn-deploy" onclick="event.stopPropagation();navigate('deploy.html','?id=${r.id}')">🚀 Deploy</button>
+          <button class="btn-sm btn-view" onclick="event.stopPropagation();navigate('repo.html','?id=${r.id}')">View Repo</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderGrid(r) {
+  const color = LANG_COLORS[r.lang] || '#94a3b8';
+  return `
+    <div class="repo-card repo-card-grid" onclick="navigate('repo.html','?id=${r.id}')">
+      <div class="gc-avatar">${r.authorAvatar}</div>
+      <div class="rc-top">
+        <div class="rc-name">${r.name}</div>
+      </div>
+      <div class="rc-author">@${r.author}</div>
+      <div class="rc-desc">${r.desc}</div>
+      <div style="display:flex;gap:6px;margin:8px 0;align-items:center">
+        <div class="rc-lang"><div class="lang-dot" style="background:${color}"></div>${r.lang}</div>
+        <span class="badge ${getBadgeClass(r.badge)}">${getBadgeLabel(r.badge)}</span>
+      </div>
+      <div class="rc-footer" style="gap:8px">
+        <div class="rc-stat">⭐ ${r.stars}</div>
+        <div class="rc-stat">🚀 ${r.deploys}</div>
+      </div>
+      <div class="rc-actions">
+        <button class="btn-sm btn-deploy" onclick="event.stopPropagation();navigate('deploy.html','?id=${r.id}')">🚀</button>
+        <button class="btn-sm btn-view" onclick="event.stopPropagation();navigate('repo.html','?id=${r.id}')">View</button>
+      </div>
+    </div>`;
+}
+
+// Pre-fill search from URL param
+const urlQ = new URLSearchParams(window.location.search).get('q');
+if (urlQ) { document.getElementById('searchInput').value = urlQ; document.getElementById('clearBtn').classList.add('visible'); }
+
+render();
+</script>
+</body>
+</html>

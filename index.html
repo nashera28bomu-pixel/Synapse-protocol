@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"/>
+<title>CymorGit — Build Smarter. Deploy Faster.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/globals.css"/>
+<style>
+/* ===== LOADER ===== */
+#loader {
+  position: fixed; inset: 0; z-index: 9999;
+  background: var(--bg);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 24px; transition: opacity 0.7s ease;
+}
+.loader-logo {
+  width: 82px; height: 82px; border-radius: 22px;
+  background: linear-gradient(135deg, var(--violet), var(--cyan));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 800; font-size: 28px; color: #fff;
+  margin-bottom: 28px; animation: logoPulse 2s ease-in-out infinite; flex-shrink: 0;
+}
+.loader-title {
+  font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 800;
+  background: linear-gradient(90deg, var(--cyan), var(--violet2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  margin-bottom: 6px; text-align: center;
+}
+.loader-sub {
+  font-size: 12px; color: var(--muted); margin-bottom: 44px;
+  font-family: 'JetBrains Mono', monospace; text-align: center;
+}
+.boot-lines { width: 100%; max-width: 300px; margin-bottom: 28px; }
+.boot-line {
+  font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted);
+  padding: 5px 0; opacity: 0; transform: translateX(-8px);
+  transition: all 0.4s ease; display: flex; align-items: center; gap: 8px;
+}
+.boot-line.active { opacity: 1; transform: translateX(0); color: var(--cyan); }
+.boot-line.done   { opacity: 0.5; transform: translateX(0); color: var(--green); }
+.boot-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: currentColor; flex-shrink: 0;
+  animation: dotPulse 0.8s ease-in-out infinite;
+}
+.boot-line.done .boot-dot { animation: none; }
+@keyframes dotPulse { 0%,100%{opacity:1}50%{opacity:0.2} }
+.progress-wrap { width: 100%; max-width: 300px; }
+.progress-label {
+  display: flex; justify-content: space-between;
+  font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); margin-bottom: 8px;
+}
+.progress-bar-bg { height: 4px; background: rgba(255,255,255,0.08); border-radius: 99px; overflow: hidden; }
+.progress-bar-fill {
+  height: 100%; border-radius: 99px; width: 0%;
+  background: linear-gradient(90deg, var(--violet), var(--cyan));
+  transition: width 0.5s ease; box-shadow: 0 0 10px rgba(0,212,255,0.5);
+}
+.welcome-text {
+  font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 700;
+  color: var(--green); margin-top: 24px; opacity: 0; transition: opacity 0.8s ease; text-align: center;
+}
+.welcome-text.show { opacity: 1; }
+
+/* ===== HERO ===== */
+.hero {
+  min-height: 100svh; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 70px 20px 40px; position: relative; overflow: hidden;
+}
+.hero-bg { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.blob {
+  position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.14;
+  animation: blobFloat 8s ease-in-out infinite;
+}
+.blob-1 { width: 280px; height: 280px; background: var(--violet); top: -80px; right: -60px; }
+.blob-2 { width: 220px; height: 220px; background: var(--cyan); bottom: 20px; left: -60px; animation-delay: -4s; }
+@keyframes blobFloat { 0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)} }
+
+/* Orbital */
+.orbital-wrap {
+  position: relative; width: min(280px, 80vw); height: min(280px, 80vw);
+  margin-bottom: 36px; flex-shrink: 0;
+}
+.orbit-ring {
+  position: absolute; border-radius: 50%;
+  border: 1px solid rgba(0,212,255,0.12);
+  top: 50%; left: 50%; transform: translate(-50%,-50%);
+}
+.ring-1 { width: 44%; height: 44%; }
+.ring-2 { width: 70%; height: 70%; }
+.ring-3 { width: 100%; height: 100%; }
+.orbit-center {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  width: 68px; height: 68px; border-radius: 18px;
+  background: linear-gradient(135deg, var(--violet), var(--cyan));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Space Grotesk', sans-serif; font-weight: 800; font-size: 22px; color: #fff;
+  box-shadow: var(--glow-violet), var(--glow-cyan); animation: logoPulse 3s ease-in-out infinite; z-index: 2;
+}
+.orbit-track {
+  position: absolute; top: 50%; left: 50%;
+  transform-origin: 0 0; border-radius: 50%;
+}
+.orbit-a { width: 44%; height: 44%; animation: orbitSpin 8s linear infinite; }
+.orbit-b { width: 70%; height: 70%; animation: orbitSpin 14s linear infinite reverse; }
+.orbit-c { width: 100%; height: 100%; animation: orbitSpin 22s linear infinite; }
+.orbit-a, .orbit-b, .orbit-c {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+}
+@keyframes orbitSpin {
+  from { transform: translate(-50%,-50%) rotate(0deg); }
+  to   { transform: translate(-50%,-50%) rotate(360deg); }
+}
+.orbit-icon {
+  position: absolute; width: 32px; height: 32px; border-radius: 50%;
+  background: var(--card); border: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: center; font-size: 13px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+.orbit-a .orbit-icon { top: 0; left: 50%; transform: translate(-50%,-50%) rotate(0deg); animation: counterA 8s linear infinite; }
+.orbit-b .orbit-icon:nth-child(1) { top: 0;    left: 50%; transform: translate(-50%,-50%) rotate(0deg); animation: counterB 14s linear infinite; }
+.orbit-b .orbit-icon:nth-child(2) { bottom: 0; left: 50%; transform: translate(-50%,50%)  rotate(0deg); animation: counterB 14s linear infinite; }
+.orbit-c .orbit-icon:nth-child(1) { top: 0;    left: 50%; transform: translate(-50%,-50%) rotate(0deg); animation: counterC 22s linear infinite; }
+.orbit-c .orbit-icon:nth-child(2) { right: 0;  top: 50%;  transform: translate(50%,-50%)  rotate(0deg); animation: counterC 22s linear infinite; }
+.orbit-c .orbit-icon:nth-child(3) { bottom: 0; left: 50%; transform: translate(-50%,50%)  rotate(0deg); animation: counterC 22s linear infinite; }
+.orbit-c .orbit-icon:nth-child(4) { left: 0;   top: 50%;  transform: translate(-50%,-50%) rotate(0deg); animation: counterC 22s linear infinite; }
+@keyframes counterA { from{transform:translate(-50%,-50%) rotate(0deg)}   to{transform:translate(-50%,-50%) rotate(-360deg)} }
+@keyframes counterB { from{transform:translate(-50%,-50%) rotate(0deg)}   to{transform:translate(-50%,-50%) rotate(360deg)}  }
+@keyframes counterC { from{transform:translate(-50%,-50%) rotate(0deg)}   to{transform:translate(-50%,-50%) rotate(-360deg)} }
+
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(124,58,237,0.15); border: 1px solid rgba(124,58,237,0.3);
+  border-radius: 99px; padding: 6px 14px; font-size: 12px; font-weight: 500; color: var(--violet2);
+  margin-bottom: 18px; flex-shrink: 0;
+}
+.hero-title {
+  font-family: 'Space Grotesk', sans-serif; font-size: clamp(26px, 7vw, 40px);
+  font-weight: 800; text-align: center; line-height: 1.15; margin-bottom: 14px; width: 100%;
+}
+.hero-title span {
+  background: linear-gradient(90deg, var(--cyan), var(--violet2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.hero-desc { font-size: 14px; color: var(--muted); text-align: center; max-width: 320px; margin-bottom: 28px; line-height: 1.7; }
+.hero-btns { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; width: 100%; }
+.btn-hero {
+  flex: 1; min-width: 130px; max-width: 176px; padding: 14px 18px;
+  border-radius: var(--radius); font-size: 14px; font-weight: 600;
+  font-family: 'Inter', sans-serif; cursor: pointer; transition: all 0.2s;
+  text-align: center; border: none;
+}
+.btn-hero-primary {
+  background: linear-gradient(135deg, var(--violet), var(--cyan)); color: #fff;
+  box-shadow: 0 4px 20px rgba(124,58,237,0.3);
+}
+.btn-hero-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(124,58,237,0.5); }
+.btn-hero-secondary {
+  background: rgba(255,255,255,0.05); color: var(--text); border: 1px solid var(--border);
+}
+.btn-hero-secondary:hover { border-color: var(--cyan); color: var(--cyan); }
+
+/* Stats */
+.stats-row {
+  background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+  padding: 20px; display: flex; justify-content: space-around; gap: 8px;
+}
+.stat { text-align: center; flex: 1; }
+.stat-n {
+  font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 800;
+  background: linear-gradient(90deg, var(--cyan), var(--violet2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.stat-l { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+/* Feature cards */
+.p20 { padding: 48px 20px; }
+.feat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.feat-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 18px 14px; transition: all 0.25s; cursor: default;
+}
+.feat-card:hover { border-color: rgba(0,212,255,0.25); transform: translateY(-2px); }
+.feat-card.wide { grid-column: 1 / -1; }
+.feat-icon { font-size: 24px; margin-bottom: 10px; display: block; }
+.feat-title { font-family:'Space Grotesk',sans-serif; font-size: 14px; font-weight: 700; margin-bottom: 5px; }
+.feat-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+/* Bot preview */
+.bot-tabs-row {
+  display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px;
+  scrollbar-width: none; margin-bottom: 16px;
+}
+.bot-tabs-row::-webkit-scrollbar { display: none; }
+.tab-pill {
+  padding: 7px 14px; border-radius: 99px; font-size: 12px; font-weight: 600;
+  border: 1px solid var(--border); background: transparent; color: var(--muted);
+  cursor: pointer; white-space: nowrap; transition: all 0.2s; flex-shrink: 0;
+  font-family: 'Inter', sans-serif;
+}
+.tab-pill.active {
+  background: linear-gradient(135deg, var(--violet), var(--cyan));
+  border-color: transparent; color: #fff;
+}
+.bot-list { display: flex; flex-direction: column; gap: 10px; }
+.bot-row {
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 14px; display: flex; align-items: center; gap: 12px;
+}
+.bot-row:hover { border-color: rgba(0,212,255,0.2); }
+.bot-av {
+  width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 20px;
+  background: rgba(124,58,237,0.12);
+}
+.bot-inf { flex: 1; min-width: 0; }
+.bot-nm { font-family:'Space Grotesk',sans-serif; font-weight: 700; font-size: 13px; margin-bottom: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bot-meta2 { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.bot-lng { font-size: 11px; color: var(--muted); font-family:'JetBrains Mono',monospace; }
+.bot-acts { display: flex; flex-direction: column; gap: 5px; flex-shrink: 0; }
+
+/* AI demo */
+.ai-demo-box {
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
+}
+.ai-demo-hdr {
+  background: var(--bg2); padding: 12px 16px;
+  display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border);
+}
+.win-dots { display: flex; gap: 5px; }
+.win-dot { width: 8px; height: 8px; border-radius: 50%; }
+.ai-demo-ttl { font-size: 12px; font-weight: 600; color: var(--muted); font-family:'JetBrains Mono',monospace; }
+.ai-msgs { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.ai-m { display: flex; gap: 10px; align-items: flex-start; }
+.ai-av {
+  width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 12px;
+}
+.ai-m-user .ai-av { background: rgba(124,58,237,0.2); }
+.ai-m-bot  .ai-av { background: linear-gradient(135deg,var(--violet),var(--cyan)); }
+.ai-txt {
+  font-size: 13px; line-height: 1.6; padding: 9px 13px; border-radius: 11px;
+  max-width: calc(100% - 42px); word-break: break-word;
+}
+.ai-m-user .ai-txt { background: rgba(124,58,237,0.12); border: 1px solid rgba(124,58,237,0.2); }
+.ai-m-bot  .ai-txt { background: rgba(0,212,255,0.07); border: 1px solid rgba(0,212,255,0.15); }
+.ai-btns { display: flex; gap: 8px; flex-wrap: wrap; padding: 4px 16px 16px; }
+.ai-btn {
+  padding: 7px 11px; border-radius: var(--radius-sm); font-size: 11px; font-weight: 600;
+  border: 1px solid var(--border); background: rgba(255,255,255,0.04); color: var(--text);
+  cursor: pointer; transition: all 0.2s; font-family:'Inter',sans-serif;
+}
+.ai-btn:hover { border-color: var(--cyan); color: var(--cyan); }
+
+/* Deploy grid */
+.deploy-g { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 20px; }
+.dep-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 14px 8px; display: flex; flex-direction: column; align-items: center; gap: 6px;
+  cursor: pointer; transition: all 0.2s;
+}
+.dep-card:hover { border-color: rgba(0,212,255,0.3); transform: translateY(-2px); }
+.dep-ico { font-size: 24px; }
+.dep-nm { font-family:'Space Grotesk',sans-serif; font-size: 11px; font-weight: 700; text-align: center; }
+.dep-free { font-size: 9px; color: var(--green); font-weight: 600; }
+
+/* Pricing */
+.price-cards { display: flex; flex-direction: column; gap: 16px; }
+.price-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px;
+}
+.price-card.featured {
+  border-color: rgba(124,58,237,0.5);
+  background: linear-gradient(135deg,rgba(124,58,237,0.08),rgba(0,212,255,0.04));
+  position: relative; overflow: hidden;
+}
+.price-card.featured::before {
+  content:''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg,var(--violet),var(--cyan));
+}
+.price-badge {
+  display: inline-block; font-size: 10px; font-weight: 700;
+  padding: 3px 10px; border-radius: 99px;
+  background: linear-gradient(135deg,var(--violet),var(--cyan)); color: #fff; margin-bottom: 12px;
+}
+.price-plan { font-family:'Space Grotesk',sans-serif; font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+.price-amt  { font-family:'Space Grotesk',sans-serif; font-size: 34px; font-weight: 800; line-height:1; margin-bottom: 4px; }
+.price-amt span { font-size: 14px; font-weight:500; color: var(--muted); }
+.price-sub { font-size: 12px; color: var(--muted); margin-bottom: 18px; }
+.price-feats { list-style:none; display:flex; flex-direction:column; gap:9px; margin-bottom:20px; }
+.price-feats li { display:flex; align-items:center; gap:10px; font-size:13px; }
+.price-feats .ck { color:var(--green); font-size:13px; flex-shrink:0; }
+.price-feats .cx { color:var(--muted); font-size:13px; flex-shrink:0; }
+.btn-plan {
+  width:100%; padding:13px; border-radius:var(--radius); font-size:14px; font-weight:600;
+  font-family:'Inter',sans-serif; cursor:pointer; border:none; transition:all 0.2s;
+}
+.btn-plan-free { background:rgba(255,255,255,0.06); color:var(--text); border:1px solid var(--border); }
+.btn-plan-prem { background:linear-gradient(135deg,var(--violet),var(--cyan)); color:#fff; box-shadow:0 4px 20px rgba(124,58,237,0.3); }
+
+/* Footer */
+footer { background:var(--bg2); border-top:1px solid var(--border); padding:40px 20px 24px; }
+.foot-top { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+.foot-logo-ico {
+  width:34px; height:34px; border-radius:9px;
+  background:linear-gradient(135deg,var(--violet),var(--cyan));
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Space Grotesk',sans-serif; font-weight:800; font-size:12px; color:#fff; flex-shrink:0;
+}
+.foot-brand {
+  font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:16px;
+  background:linear-gradient(90deg,var(--cyan),var(--violet2));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+.foot-tag { font-size:13px; color:var(--muted); margin-bottom:20px; line-height:1.6; }
+.foot-links { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:28px; }
+.foot-link { font-size:13px; color:var(--muted); text-decoration:none; padding:4px 0; transition:color 0.2s; }
+.foot-link:hover { color:var(--cyan); }
+.foot-bottom { border-top:1px solid var(--border); padding-top:18px; text-align:center; }
+.foot-copy { font-size:12px; color:var(--muted); margin-bottom:4px; }
+.foot-made { font-size:11px; color:var(--muted); font-family:'JetBrains Mono',monospace; }
+.foot-made span { color:var(--cyan); }
+</style>
+</head>
+<body>
+
+<!-- BOOT LOADER -->
+<div id="loader">
+  <div class="loader-logo">CG</div>
+  <div class="loader-title">CymorGit</div>
+  <div class="loader-sub">// Build Smarter. Deploy Faster.</div>
+  <div class="boot-lines">
+    <div class="boot-line" id="bl0"><div class="boot-dot"></div>Initializing CymorGit...</div>
+    <div class="boot-line" id="bl1"><div class="boot-dot"></div>Connecting to server...</div>
+    <div class="boot-line" id="bl2"><div class="boot-dot"></div>Loading repositories...</div>
+    <div class="boot-line" id="bl3"><div class="boot-dot"></div>Starting AI engine...</div>
+    <div class="boot-line" id="bl4"><div class="boot-dot"></div>Finalizing...</div>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-label"><span>Loading</span><span id="pct">0%</span></div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="pbar"></div></div>
+  </div>
+  <div class="welcome-text" id="welcome">✓ Welcome to CymorGit</div>
+</div>
+
+<!-- MINI LOADER -->
+<div id="mini-loader">
+  <div class="mini-logo">CG</div>
+  <div class="mini-spinner"></div>
+  <div class="mini-msg" id="miniMsg">Loading...</div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- APP -->
+<div id="app" style="opacity:0;transition:opacity 0.8s ease;">
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <div class="nav-logo-icon">CG</div>
+    <span class="nav-logo-text">CymorGit</span>
+  </a>
+  <div class="nav-actions">
+    <button class="btn-ghost" onclick="navigate('explore.html')">Explore</button>
+    <button class="btn-primary" onclick="navigate('dashboard.html')">Dashboard</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+  </div>
+  <div class="orbital-wrap">
+    <div class="orbit-ring ring-1"></div>
+    <div class="orbit-ring ring-2"></div>
+    <div class="orbit-ring ring-3"></div>
+    <div class="orbit-center">CG</div>
+    <div class="orbit-track orbit-a"><div class="orbit-icon">🤖</div></div>
+    <div class="orbit-track orbit-b"><div class="orbit-icon">⚡</div><div class="orbit-icon">🌐</div></div>
+    <div class="orbit-track orbit-c">
+      <div class="orbit-icon">📦</div><div class="orbit-icon">🚀</div>
+      <div class="orbit-icon">🔒</div><div class="orbit-icon">💬</div>
+    </div>
+  </div>
+  <div class="hero-badge">✨ Built for African Developers</div>
+  <h1 class="hero-title">The AI-Powered<br/><span>Developer Platform</span><br/>Built for Mobile</h1>
+  <p class="hero-desc">Import repos, understand code with AI, debug errors, and deploy bots — all from your phone.</p>
+  <div class="hero-btns">
+    <button class="btn-hero btn-hero-primary" onclick="navigate('dashboard.html')">🚀 Get Started Free</button>
+    <button class="btn-hero btn-hero-secondary" onclick="navigate('explore.html')">🔍 Explore Bots</button>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-row">
+  <div class="stat"><div class="stat-n">2.4K+</div><div class="stat-l">Repositories</div></div>
+  <div class="stat"><div class="stat-n">180+</div><div class="stat-l">Bots Listed</div></div>
+  <div class="stat"><div class="stat-n">6</div><div class="stat-l">Deploy Targets</div></div>
+  <div class="stat"><div class="stat-n">100%</div><div class="stat-l">Mobile-First</div></div>
+</div>
+
+<!-- FEATURES -->
+<div class="p20">
+  <div class="section-label">// What You Get</div>
+  <h2 class="section-title">Everything in your pocket</h2>
+  <p class="section-desc" style="margin-bottom:24px">No PC required. Build, learn, fix, and ship from anywhere.</p>
+  <div class="feat-grid">
+    <div class="feat-card"><span class="feat-icon">🤖</span><div class="feat-title">AI Code Assistant</div><div class="feat-desc">Explain, debug, fix, and optimize any codebase using Gemini AI.</div></div>
+    <div class="feat-card"><span class="feat-icon">📁</span><div class="feat-title">Repository Hub</div><div class="feat-desc">Import from GitHub or upload your own. Manage branches and commits.</div></div>
+    <div class="feat-card"><span class="feat-icon">🔒</span><div class="feat-title">Security Scanner</div><div class="feat-desc">Detects exposed API keys, tokens, and vulnerabilities instantly.</div></div>
+    <div class="feat-card"><span class="feat-icon">🌐</span><div class="feat-title">Live Preview</div><div class="feat-desc">Instant HTML/CSS/JS preview in a sandboxed environment.</div></div>
+    <div class="feat-card wide"><span class="feat-icon">🚀</span><div class="feat-title">One-Click Deploy</div><div class="feat-desc">AI detects ENV variables and config issues — then deploys to Vercel, Netlify, Render, Railway, Heroku, or Koyeb automatically.</div></div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- BOT PREVIEW -->
+<div class="p20">
+  <div class="section-label">// Bot Marketplace</div>
+  <h2 class="section-title">Discover & Deploy Bots</h2>
+  <p class="section-desc" style="margin-bottom:20px">Browse verified bots with AI quality scores.</p>
+  <div class="bot-tabs-row" id="homeTabs">
+    <button class="tab-pill active" onclick="homeTab(this,'whatsapp')">🟢 WhatsApp</button>
+    <button class="tab-pill" onclick="homeTab(this,'telegram')">✈️ Telegram</button>
+    <button class="tab-pill" onclick="homeTab(this,'discord')">💬 Discord</button>
+  </div>
+  <div class="bot-list" id="homeBots"></div>
+  <button onclick="navigate('explore.html')" style="width:100%;margin-top:14px;" class="btn-ghost">View All Repositories →</button>
+</div>
+
+<div class="divider"></div>
+
+<!-- AI DEMO -->
+<div class="p20">
+  <div class="section-label">// AI Intelligence</div>
+  <h2 class="section-title">Understand any codebase instantly</h2>
+  <p class="section-desc" style="margin-bottom:20px">Ask anything about a repository. AI reads the code and explains it clearly.</p>
+  <div class="ai-demo-box">
+    <div class="ai-demo-hdr">
+      <div class="win-dots"><div class="win-dot" style="background:#ef4444"></div><div class="win-dot" style="background:#f59e0b"></div><div class="win-dot" style="background:#10b981"></div></div>
+      <span class="ai-demo-ttl">cymorgit — AI Assistant</span>
+    </div>
+    <div class="ai-msgs">
+      <div class="ai-m ai-m-user"><div class="ai-av">👤</div><div class="ai-txt">How does the authentication work in this bot?</div></div>
+      <div class="ai-m ai-m-bot"><div class="ai-av">🤖</div><div class="ai-txt">This bot uses session-based auth stored in MongoDB. When a user pairs via Baileys, the session is saved to <code style="background:rgba(0,212,255,0.1);padding:1px 5px;border-radius:4px;font-size:11px;">./sessions/</code>. The <code style="background:rgba(0,212,255,0.1);padding:1px 5px;border-radius:4px;font-size:11px;">auth.js</code> handles reconnections automatically. I found 2 security issues — want me to fix them?</div></div>
+    </div>
+    <div class="ai-btns">
+      <button class="ai-btn" onclick="navigate('ai.html')">🔍 Explain Code</button>
+      <button class="ai-btn" onclick="navigate('ai.html')">🐛 Debug Error</button>
+      <button class="ai-btn" onclick="navigate('ai.html')">🔒 Security Scan</button>
+      <button class="ai-btn" onclick="navigate('ai.html')">📄 Generate Docs</button>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- DEPLOY -->
+<div class="p20">
+  <div class="section-label">// Deploy Center</div>
+  <h2 class="section-title">One click. Live in seconds.</h2>
+  <p class="section-desc" style="margin-bottom:20px">AI configures everything before deployment.</p>
+  <div class="deploy-g" id="deployGrid"></div>
+  <button onclick="navigate('deploy.html')" class="btn-primary" style="width:100%">Open Deployment Center →</button>
+</div>
+
+<div class="divider"></div>
+
+<!-- PRICING -->
+<div class="p20">
+  <div class="section-label">// Pricing</div>
+  <h2 class="section-title">Start free. Scale when ready.</h2>
+  <p class="section-desc" style="margin-bottom:20px">Built for every stage — students to indie hackers.</p>
+  <div class="price-cards">
+    <div class="price-card">
+      <div class="price-plan">Free</div>
+      <div class="price-amt">$0 <span>/ forever</span></div>
+      <div class="price-sub">For individuals getting started</div>
+      <ul class="price-feats">
+        <li><span class="ck">✓</span> Repository management</li>
+        <li><span class="ck">✓</span> Bot marketplace access</li>
+        <li><span class="ck">✓</span> Basic AI (20 queries/day)</li>
+        <li><span class="ck">✓</span> Live preview studio</li>
+        <li><span class="ck">✓</span> 3 deployments/month</li>
+        <li><span class="cx">✕</span> Unlimited AI queries</li>
+        <li><span class="cx">✕</span> Private repositories</li>
+      </ul>
+      <button class="btn-plan btn-plan-free" onclick="navigate('dashboard.html')">Get Started Free</button>
+    </div>
+    <div class="price-card featured">
+      <span class="price-badge">⚡ Most Popular</span>
+      <div class="price-plan">Premium</div>
+      <div class="price-amt">$9 <span>/ month</span></div>
+      <div class="price-sub">For serious developers & teams</div>
+      <ul class="price-feats">
+        <li><span class="ck">✓</span> Everything in Free</li>
+        <li><span class="ck">✓</span> Unlimited AI queries</li>
+        <li><span class="ck">✓</span> AI repository chat</li>
+        <li><span class="ck">✓</span> Advanced error fixer</li>
+        <li><span class="ck">✓</span> Unlimited deployments</li>
+        <li><span class="ck">✓</span> Private repositories</li>
+        <li><span class="ck">✓</span> Team collaboration</li>
+      </ul>
+      <button class="btn-plan btn-plan-prem" onclick="triggerMiniLoader('Setting up Premium...')">Upgrade to Premium</button>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-top">
+    <div class="foot-logo-ico">CG</div>
+    <span class="foot-brand">CymorGit</span>
+  </div>
+  <p class="foot-tag">The AI-powered developer platform built for mobile-first developers across Africa and beyond.</p>
+  <div class="foot-links">
+    <a href="explore.html" class="foot-link">Explore Repos</a>
+    <a href="explore.html" class="foot-link">Bot Marketplace</a>
+    <a href="ai.html" class="foot-link">AI Assistant</a>
+    <a href="deploy.html" class="foot-link">Deployments</a>
+    <a href="#" class="foot-link">Documentation</a>
+    <a href="#" class="foot-link">Community</a>
+  </div>
+  <div class="foot-bottom">
+    <p class="foot-copy">© 2025 CymorGit. All rights reserved.</p>
+    <p class="foot-made">// Made with ❤️ by <span>Cymor Tech Services</span> · Kenya</p>
+  </div>
+</footer>
+
+</div><!-- end #app -->
+
+<script src="js/data.js"></script>
+<script>
+// Boot loader
+const bootSteps = [
+  {id:'bl0',pct:10,t:400},{id:'bl1',pct:30,t:1000},
+  {id:'bl2',pct:55,t:1800},{id:'bl3',pct:78,t:2600},{id:'bl4',pct:95,t:3400}
+];
+function setProgress(p) {
+  document.getElementById('pbar').style.width = p+'%';
+  document.getElementById('pct').textContent = p+'%';
+}
+bootSteps.forEach((s,i) => {
+  setTimeout(() => {
+    if(i>0){ const prev=document.getElementById(bootSteps[i-1].id); prev.classList.replace('active','done'); }
+    document.getElementById(s.id).classList.add('active');
+    setProgress(s.pct);
+  }, s.t);
+});
+setTimeout(() => {
+  document.getElementById('bl4').classList.replace('active','done');
+  setProgress(100);
+  setTimeout(() => document.getElementById('welcome').classList.add('show'), 400);
+  setTimeout(() => { document.getElementById('loader').style.opacity='0'; }, 1400);
+  setTimeout(() => {
+    document.getElementById('loader').style.display='none';
+    document.getElementById('app').style.opacity='1';
+    renderHomeBots('whatsapp');
+    renderDeployGrid();
+  }, 2100);
+}, 4200);
+
+// Home bots
+function renderHomeBots(cat) {
+  const list = CG.repos.filter(r => cat==='all' || r.category===cat).slice(0,3);
+  document.getElementById('homeBots').innerHTML = list.map(r => `
+    <div class="bot-row">
+      <div class="bot-av">${r.authorAvatar}</div>
+      <div class="bot-inf">
+        <div class="bot-nm">${r.name}</div>
+        <div class="bot-meta2">
+          <span class="bot-lng">${r.lang}</span>
+          <span class="badge ${getBadgeClass(r.badge)}">${getBadgeLabel(r.badge)}</span>
+        </div>
+        <div class="bot-meta2" style="margin-top:3px">
+          <span style="font-size:11px;color:var(--muted)">⭐ ${r.stars}</span>
+          <span style="font-size:11px;color:var(--green)">AI: ${r.quality}%</span>
+        </div>
+      </div>
+      <div class="bot-acts">
+        <button class="btn-sm btn-deploy" onclick="navigate('deploy.html','?id=${r.id}')">🚀 Deploy</button>
+        <button class="btn-sm btn-view" onclick="navigate('repo.html','?id=${r.id}')">View</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function homeTab(el, cat) {
+  document.querySelectorAll('#homeTabs .tab-pill').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderHomeBots(cat);
+}
+
+function renderDeployGrid() {
+  document.getElementById('deployGrid').innerHTML = CG.deployPlatforms.map(p=>`
+    <div class="dep-card" onclick="navigate('deploy.html')">
+      <div class="dep-ico">${p.icon}</div>
+      <div class="dep-nm">${p.name}</div>
+      <div class="dep-free">${p.free?'Free':'Paid'}</div>
+    </div>
+  `).join('');
+}
+</script>
+</body>
+</html>

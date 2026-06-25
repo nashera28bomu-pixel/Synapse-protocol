@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"/>
+<title>Deploy — CymorGit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/globals.css"/>
+<style>
+.deploy-header { padding: 20px 20px 0; }
+.deploy-title { font-family:'Space Grotesk',sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+.deploy-sub   { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+
+/* Wizard steps */
+.wizard-steps {
+  display: flex; align-items: center; gap: 0; margin-bottom: 24px; overflow-x: auto;
+  scrollbar-width: none; padding-bottom: 2px;
+}
+.wizard-steps::-webkit-scrollbar { display: none; }
+.wiz-step {
+  display: flex; align-items: center; gap: 0; flex-shrink: 0;
+}
+.wiz-num {
+  width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; font-family:'Space Grotesk',sans-serif;
+  border: 2px solid var(--border); color: var(--muted); background: var(--card);
+  transition: all 0.3s;
+}
+.wiz-num.done   { background: var(--green);  border-color: var(--green);  color: #fff; }
+.wiz-num.active { background: linear-gradient(135deg,var(--violet),var(--cyan)); border-color: transparent; color: #fff; }
+.wiz-label { font-size: 11px; color: var(--muted); margin-left: 6px; white-space: nowrap; transition: color 0.3s; }
+.wiz-label.active { color: var(--cyan); font-weight: 600; }
+.wiz-label.done  { color: var(--green); }
+.wiz-line { width: 20px; height: 2px; background: var(--border); margin: 0 4px; flex-shrink: 0; transition: background 0.3s; }
+.wiz-line.done { background: var(--green); }
+
+/* Step panels */
+.step-panel { display: none; padding: 0 20px; }
+.step-panel.active { display: block; }
+
+/* Repo picker */
+.repo-picker { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.repo-pick-item {
+  background: var(--card); border: 2px solid var(--border); border-radius: var(--radius);
+  padding: 14px; display: flex; align-items: center; gap: 12px; cursor: pointer;
+  transition: all 0.2s;
+}
+.repo-pick-item:hover   { border-color: rgba(0,212,255,0.3); }
+.repo-pick-item.selected{ border-color: var(--cyan); background: rgba(0,212,255,0.05); }
+.rp-av { width: 40px; height: 40px; border-radius: 10px; background: rgba(124,58,237,0.15); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+.rp-info { flex: 1; min-width: 0; }
+.rp-name { font-family:'Space Grotesk',sans-serif; font-size: 13px; font-weight: 700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.rp-meta { font-size: 11px; color: var(--muted); font-family:'JetBrains Mono',monospace; margin-top:2px; }
+.rp-check { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:10px; transition:all 0.2s; }
+.repo-pick-item.selected .rp-check { background: var(--cyan); border-color: var(--cyan); color: #fff; }
+
+/* Platform picker */
+.platform-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+.plat-card {
+  background: var(--card); border: 2px solid var(--border); border-radius: var(--radius);
+  padding: 16px; cursor: pointer; transition: all 0.2s; text-align: center;
+}
+.plat-card:hover    { border-color: rgba(0,212,255,0.3); }
+.plat-card.selected { border-color: var(--cyan); background: rgba(0,212,255,0.05); }
+.plat-ico  { font-size: 28px; margin-bottom: 6px; }
+.plat-name { font-family:'Space Grotesk',sans-serif; font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+.plat-note { font-size: 11px; color: var(--muted); line-height: 1.4; }
+.plat-free { display: inline-block; font-size: 10px; font-weight: 600; margin-top: 6px; padding: 2px 8px; border-radius: 99px; }
+.plat-free.free { background:rgba(16,185,129,0.12); color:var(--green); border:1px solid rgba(16,185,129,0.2); }
+.plat-free.paid { background:rgba(245,158,11,0.12); color:var(--yellow); border:1px solid rgba(245,158,11,0.2); }
+
+/* ENV editor */
+.env-editor { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+.env-row { display: flex; flex-direction: column; gap: 5px; }
+.env-row label { font-size: 12px; font-weight: 600; color: var(--muted); font-family:'JetBrains Mono',monospace; display:flex; align-items:center; justify-content:space-between; }
+.env-req-tag { font-size: 10px; padding: 1px 7px; border-radius: 99px; background:rgba(239,68,68,0.12); color:var(--red); border:1px solid rgba(239,68,68,0.2); }
+.env-input {
+  width: 100%; background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 10px 12px; font-size: 13px; color: var(--text);
+  font-family: 'JetBrains Mono', monospace; outline: none; transition: border-color 0.2s;
+}
+.env-input:focus { border-color: var(--cyan); }
+.env-input::placeholder { color: var(--muted); }
+.env-ai-hint { font-size: 11px; color: var(--violet2); margin-top: 2px; cursor: pointer; }
+.env-ai-hint:hover { color: var(--cyan); }
+
+/* Deploy progress */
+.deploy-progress { display: flex; flex-direction: column; gap: 0; }
+.dp-step {
+  display: flex; gap: 14px; align-items: flex-start; padding: 14px 0;
+  border-bottom: 1px solid var(--border); position: relative;
+}
+.dp-step:last-child { border-bottom: none; }
+.dp-step::before {
+  content: ''; position: absolute; left: 13px; top: 40px;
+  width: 2px; height: calc(100% - 14px);
+  background: var(--border);
+}
+.dp-step:last-child::before { display: none; }
+.dp-ico {
+  width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 12px;
+  border: 2px solid var(--border); background: var(--card); z-index:1;
+  transition: all 0.3s;
+}
+.dp-ico.done     { background: var(--green);  border-color: var(--green); }
+.dp-ico.running  { background: linear-gradient(135deg,var(--violet),var(--cyan)); border-color: transparent; animation: iconPulse 1s ease-in-out infinite; }
+.dp-ico.pending  { background: var(--card); border-color: var(--border); color: var(--muted); }
+@keyframes iconPulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+.dp-body { flex: 1; }
+.dp-title { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+.dp-desc  { font-size: 12px; color: var(--muted); line-height: 1.5; }
+.dp-log   { font-family:'JetBrains Mono',monospace; font-size: 11px; color: var(--cyan); margin-top: 6px; background: var(--bg); padding: 8px; border-radius: 6px; line-height: 1.6; }
+
+/* Log terminal */
+.log-terminal {
+  background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 14px; font-family:'JetBrains Mono',monospace; font-size: 11px; line-height: 1.8;
+  max-height: 200px; overflow-y: auto; margin-bottom: 16px;
+}
+.log-line { color: var(--muted); }
+.log-line.success { color: var(--green); }
+.log-line.info    { color: var(--cyan); }
+.log-line.warn    { color: var(--yellow); }
+.log-line.error   { color: var(--red); }
+
+/* Success screen */
+.success-screen { text-align: center; padding: 32px 20px; }
+.success-ico { font-size: 56px; margin-bottom: 16px; animation: bounce 0.6s ease; }
+@keyframes bounce { 0%{transform:scale(0)}70%{transform:scale(1.15)}100%{transform:scale(1)} }
+.success-title { font-family:'Space Grotesk',sans-serif; font-size: 24px; font-weight: 800; margin-bottom: 8px; }
+.success-desc  { font-size: 14px; color: var(--muted); margin-bottom: 20px; line-height: 1.6; }
+.success-url {
+  display: inline-block; background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.2);
+  border-radius: var(--radius-sm); padding: 10px 16px; font-family:'JetBrains Mono',monospace;
+  font-size: 13px; color: var(--cyan); margin-bottom: 20px; word-break: break-all;
+}
+.success-actions { display: flex; flex-direction: column; gap: 10px; }
+
+.step-btns { display: flex; gap: 10px; padding: 16px 20px; border-top: 1px solid var(--border); position: sticky; bottom: 64px; background: rgba(8,12,24,0.95); backdrop-filter:blur(12px); }
+.step-btns .btn-primary { flex: 1; padding: 14px; font-size: 14px; }
+.step-btns .btn-ghost   { padding: 14px 18px; font-size: 14px; }
+</style>
+</head>
+<body>
+
+<div id="mini-loader"><div class="mini-logo">CG</div><div class="mini-spinner"></div><div class="mini-msg" id="miniMsg">Loading...</div></div>
+<div id="toast"></div>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <div class="nav-logo-icon">CG</div>
+    <span class="nav-logo-text">CymorGit</span>
+  </a>
+  <div class="nav-actions">
+    <button class="nav-icon-btn" onclick="navigate('explore.html')">🔍</button>
+    <button class="nav-icon-btn" onclick="navigate('ai.html')">🤖</button>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="deploy-header">
+    <div class="deploy-title">🚀 Deployment Center</div>
+    <div class="deploy-sub">AI-powered one-click deployment to 6 platforms</div>
+
+    <!-- Wizard progress -->
+    <div class="wizard-steps" id="wizSteps">
+      <div class="wiz-step"><div class="wiz-num active" id="wn0">1</div><span class="wiz-label active" id="wl0">Select Repo</span></div>
+      <div class="wiz-line" id="wline0"></div>
+      <div class="wiz-step"><div class="wiz-num" id="wn1">2</div><span class="wiz-label" id="wl1">Platform</span></div>
+      <div class="wiz-line" id="wline1"></div>
+      <div class="wiz-step"><div class="wiz-num" id="wn2">3</div><span class="wiz-label" id="wl2">Configure</span></div>
+      <div class="wiz-line" id="wline2"></div>
+      <div class="wiz-step"><div class="wiz-num" id="wn3">4</div><span class="wiz-label" id="wl3">Deploy</span></div>
+      <div class="wiz-line" id="wline3"></div>
+      <div class="wiz-step"><div class="wiz-num" id="wn4">5</div><span class="wiz-label" id="wl4">Live 🎉</span></div>
+    </div>
+  </div>
+
+  <!-- Step 0: Select Repo -->
+  <div class="step-panel active" id="step0">
+    <div style="margin-bottom:14px">
+      <div class="section-label">// Step 1</div>
+      <h3 style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:800;margin-bottom:6px">Choose a Repository</h3>
+      <p style="font-size:13px;color:var(--muted)">Select what you want to deploy</p>
+    </div>
+    <div class="repo-picker" id="repoPicker"></div>
+    <button class="btn-ghost" style="width:100%;margin-bottom:16px" onclick="showToast('GitHub import coming with backend!')">📥 Import from GitHub</button>
+  </div>
+
+  <!-- Step 1: Platform -->
+  <div class="step-panel" id="step1">
+    <div style="margin-bottom:14px;padding:0">
+      <div class="section-label">// Step 2</div>
+      <h3 style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:800;margin-bottom:6px">Choose Platform</h3>
+      <p style="font-size:13px;color:var(--muted)">AI will recommend the best option</p>
+    </div>
+    <div id="aiRecommend" style="background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.25);border-radius:var(--radius);padding:14px;margin-bottom:16px;display:flex;gap:10px;align-items:flex-start">
+      <span style="font-size:18px">🤖</span>
+      <div>
+        <div style="font-size:13px;font-weight:600;margin-bottom:4px">AI Recommendation</div>
+        <div id="aiRecommendText" style="font-size:12px;color:var(--muted);line-height:1.5"></div>
+      </div>
+    </div>
+    <div class="platform-grid" id="platformGrid"></div>
+  </div>
+
+  <!-- Step 2: Configure -->
+  <div class="step-panel" id="step2">
+    <div style="margin-bottom:14px">
+      <div class="section-label">// Step 3</div>
+      <h3 style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:800;margin-bottom:6px">Configure Variables</h3>
+      <p style="font-size:13px;color:var(--muted)">AI detected these required ENV variables</p>
+    </div>
+    <div style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:var(--radius);padding:12px;margin-bottom:16px;display:flex;gap:8px;align-items:flex-start">
+      <span>✓</span>
+      <div style="font-size:12px;color:var(--green)">AI scanned your repository and detected all required ENV variables. Fill them in below.</div>
+    </div>
+    <div class="env-editor" id="envEditor"></div>
+    <button onclick="aiGenerateEnv()" style="width:100%;margin-bottom:16px" class="btn-ghost">✨ AI Generate Template Values</button>
+  </div>
+
+  <!-- Step 3: Deploy -->
+  <div class="step-panel" id="step3">
+    <div style="margin-bottom:14px">
+      <div class="section-label">// Step 4</div>
+      <h3 style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:800;margin-bottom:6px">Deploying...</h3>
+      <p style="font-size:13px;color:var(--muted)" id="deployingTo">Deploying to platform</p>
+    </div>
+    <div class="log-terminal" id="logTerminal">
+      <div class="log-line info">// CymorGit Deployment Engine v1.0</div>
+      <div class="log-line">Waiting for deployment to start...</div>
+    </div>
+    <div class="deploy-progress" id="deployProgress"></div>
+  </div>
+
+  <!-- Step 4: Success -->
+  <div class="step-panel" id="step4">
+    <div class="success-screen">
+      <div class="success-ico">🎉</div>
+      <div class="success-title">Deployment Successful!</div>
+      <div class="success-desc" id="successDesc">Your repository is now live and accessible.</div>
+      <div class="success-url" id="successUrl">Loading URL...</div>
+      <div class="success-actions">
+        <button class="btn-primary" onclick="showToast('Opening live URL...')">🌐 Open Live Site</button>
+        <button class="btn-ghost" onclick="navigate('dashboard.html')">📊 View Dashboard</button>
+        <button class="btn-ghost" onclick="resetWizard()">🚀 Deploy Another</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step buttons -->
+  <div class="step-btns" id="stepBtns">
+    <button class="btn-ghost" id="backBtn" onclick="prevStep()" style="display:none">← Back</button>
+    <button class="btn-primary" id="nextBtn" onclick="nextStep()">Continue →</button>
+  </div>
+
+  <div style="height:20px"></div>
+</div>
+
+<!-- Bottom Nav -->
+<nav class="bottom-nav">
+  <a class="bn-item" href="index.html"><span class="bn-icon">🏠</span><span class="bn-label">Home</span></a>
+  <button class="bn-item" onclick="navigate('explore.html')"><span class="bn-icon">🔍</span><span class="bn-label">Explore</span></button>
+  <button class="bn-item" onclick="navigate('ai.html')"><span class="bn-icon">🤖</span><span class="bn-label">AI</span></button>
+  <button class="bn-item active"><span class="bn-icon">🚀</span><span class="bn-label">Deploy</span></button>
+  <button class="bn-item" onclick="navigate('dashboard.html')"><span class="bn-icon">👤</span><span class="bn-label">Profile</span></button>
+</nav>
+
+<script src="js/data.js"></script>
+<script>
+let currentStep = 0;
+let selectedRepo = null;
+let selectedPlatform = null;
+
+// Pre-select repo from URL
+const urlParams = new URLSearchParams(window.location.search);
+const urlRepoId = parseInt(urlParams.get('id'));
+const urlPlatId = urlParams.get('platform');
+
+// Render repo picker
+document.getElementById('repoPicker').innerHTML = CG.repos.slice(0,6).map(r => `
+  <div class="repo-pick-item ${urlRepoId===r.id?'selected':''}" id="rp-${r.id}" onclick="selectRepo(${r.id})">
+    <div class="rp-av">${r.authorAvatar}</div>
+    <div class="rp-info">
+      <div class="rp-name">${r.name}</div>
+      <div class="rp-meta">${r.lang} · ⭐ ${r.stars}</div>
+    </div>
+    <div class="rp-check">${urlRepoId===r.id?'✓':''}</div>
+  </div>
+`).join('');
+
+if (urlRepoId) { selectedRepo = CG.repos.find(r => r.id === urlRepoId); }
+
+// Render platform grid
+document.getElementById('platformGrid').innerHTML = CG.deployPlatforms.map(p => `
+  <div class="plat-card ${urlPlatId===p.id?'selected':''}" id="pp-${p.id}" onclick="selectPlatform('${p.id}')">
+    <div class="plat-ico">${p.icon}</div>
+    <div class="plat-name">${p.name}</div>
+    <div class="plat-note">${p.note}</div>
+    <span class="plat-free ${p.free?'free':'paid'}">${p.free?'Free':'Paid'}</span>
+  </div>
+`).join('');
+
+if (urlPlatId) { selectedPlatform = CG.deployPlatforms.find(p => p.id === urlPlatId); }
+
+function selectRepo(id) {
+  selectedRepo = CG.repos.find(r => r.id === id);
+  document.querySelectorAll('.repo-pick-item').forEach(el => { el.classList.remove('selected'); el.querySelector('.rp-check').textContent = ''; });
+  const el = document.getElementById('rp-'+id);
+  el.classList.add('selected'); el.querySelector('.rp-check').textContent = '✓';
+}
+
+function selectPlatform(id) {
+  selectedPlatform = CG.deployPlatforms.find(p => p.id === id);
+  document.querySelectorAll('.plat-card').forEach(el => el.classList.remove('selected'));
+  document.getElementById('pp-'+id).classList.add('selected');
+}
+
+function updateWizard() {
+  for (let i = 0; i <= 4; i++) {
+    const num = document.getElementById('wn'+i);
+    const lbl = document.getElementById('wl'+i);
+    num.className = 'wiz-num ' + (i < currentStep ? 'done' : i === currentStep ? 'active' : '');
+    lbl.className = 'wiz-label ' + (i < currentStep ? 'done' : i === currentStep ? 'active' : '');
+    if (i < 4) document.getElementById('wline'+i).className = 'wiz-line ' + (i < currentStep ? 'done' : '');
+  }
+  document.querySelectorAll('.step-panel').forEach((p,i) => p.classList.toggle('active', i === currentStep));
+  document.getElementById('backBtn').style.display = currentStep > 0 && currentStep < 4 ? 'block' : 'none';
+  document.getElementById('nextBtn').style.display = currentStep < 4 ? 'flex' : 'none';
+
+  const labels = ['Continue →','Continue →','Review & Deploy','',''];
+  document.getElementById('nextBtn').textContent = labels[currentStep] || 'Continue →';
+}
+
+function buildEnvEditor() {
+  if (!selectedRepo) return;
+  document.getElementById('envEditor').innerHTML = selectedRepo.envVars.map(v => `
+    <div class="env-row">
+      <label>${v} <span class="env-req-tag">Required</span></label>
+      <input class="env-input" id="env-${v}" placeholder="Enter value for ${v}" type="password"/>
+      <div class="env-ai-hint" onclick="aiHint('${v}')">✨ AI can suggest a format for this</div>
+    </div>
+  `).join('') || '<div style="font-size:13px;color:var(--green)">✓ No ENV variables required for this project!</div>';
+}
+
+function updateAIRecommend() {
+  if (!selectedRepo) return;
+  const recs = { whatsapp:'Render is best for WhatsApp bots — it supports long-running Node.js processes with free tier and persistent storage.', telegram:'Railway is recommended for Telegram bots — fast cold starts and affordable pricing for always-on bots.', website:'Vercel is perfect for websites — instant deploys, global CDN, and the best Next.js support available.', api:'Render or Railway work great for Express APIs — both support Node.js with free tier options.', discord:'Railway is best for Discord bots — minimal latency and stable uptime on the starter plan.' };
+  document.getElementById('aiRecommendText').textContent = recs[selectedRepo.category] || 'Render is recommended for most projects — free tier, easy setup, and great Node.js support.';
+}
+
+function nextStep() {
+  if (currentStep === 0 && !selectedRepo) { showToast('Please select a repository first'); return; }
+  if (currentStep === 1 && !selectedPlatform) { showToast('Please select a platform first'); return; }
+  if (currentStep === 1) { buildEnvEditor(); }
+  if (currentStep === 2) { startDeploy(); return; }
+  currentStep++;
+  if (currentStep === 1) updateAIRecommend();
+  updateWizard();
+}
+
+function prevStep() { if (currentStep > 0) { currentStep--; updateWizard(); } }
+
+function aiHint(key) { showToast('✨ AI: ' + key + ' format will be shown after backend integration'); }
+
+function aiGenerateEnv() {
+  triggerMiniLoader('AI generating ENV template...', 1800);
+  setTimeout(() => {
+    document.querySelectorAll('.env-input').forEach(input => {
+      if (!input.value) { input.value = '••••••••••••'; input.type = 'text'; input.style.color='var(--violet2)'; }
+    });
+    showToast('✨ AI generated template values!');
+  }, 1900);
+}
+
+function startDeploy() {
+  currentStep = 3;
+  updateWizard();
+  document.getElementById('nextBtn').style.display = 'none';
+  const plat = selectedPlatform || CG.deployPlatforms[2];
+  const repo  = selectedRepo    || CG.repos[0];
+  document.getElementById('deployingTo').textContent = `Deploying ${repo.name} to ${plat.name}...`;
+
+  const logs = [
+    { t:500,  cls:'info',    txt:`> Initializing deployment for ${repo.name}` },
+    { t:1000, cls:'',        txt:'> Cloning repository...' },
+    { t:1800, cls:'success', txt:'✓ Repository cloned successfully' },
+    { t:2400, cls:'',        txt:`> Connecting to ${plat.name}...` },
+    { t:3000, cls:'success', txt:`✓ Connected to ${plat.name}` },
+    { t:3600, cls:'',        txt:'> Installing dependencies (npm install)...' },
+    { t:4600, cls:'success', txt:'✓ Dependencies installed (87 packages)' },
+    { t:5200, cls:'',        txt:'> Setting environment variables...' },
+    { t:5800, cls:'success', txt:'✓ ENV variables configured' },
+    { t:6400, cls:'',        txt:'> Building application...' },
+    { t:7400, cls:'success', txt:'✓ Build successful' },
+    { t:8000, cls:'',        txt:'> Starting server...' },
+    { t:8800, cls:'success', txt:`✓ Server running on port 3000` },
+    { t:9400, cls:'success', txt:`✓ Deployment complete! 🎉` },
+  ];
+
+  const steps = [
+    { ico:'📦', title:'Scanning repository',    desc:'AI checks code, ENV vars, and dependencies' },
+    { ico:'🔗', title:`Connecting to ${plat.name}`,  desc:'Authenticating with deployment platform'     },
+    { ico:'⚙️', title:'Installing packages',    desc:'Running npm install in your project'           },
+    { ico:'🏗', title:'Building application',   desc:'Compiling and bundling your code'              },
+    { ico:'🌐', title:'Going live',             desc:'Starting your server on the platform'          },
+  ];
+
+  document.getElementById('deployProgress').innerHTML = steps.map((s,i) => `
+    <div class="dp-step">
+      <div class="dp-ico pending" id="dico-${i}">${s.ico}</div>
+      <div class="dp-body">
+        <div class="dp-title">${s.title}</div>
+        <div class="dp-desc">${s.desc}</div>
+        <div class="dp-log" id="dlog-${i}" style="display:none"></div>
+      </div>
+    </div>
+  `).join('');
+
+  const terminal = document.getElementById('logTerminal');
+  logs.forEach(log => {
+    setTimeout(() => {
+      terminal.innerHTML += `<div class="log-line ${log.cls}">${log.txt}</div>`;
+      terminal.scrollTop = terminal.scrollHeight;
+    }, log.t);
+  });
+
+  const stepTimes = [600,2200,3800,5400,7800];
+  stepTimes.forEach((t,i) => {
+    setTimeout(() => {
+      if (i>0) { document.getElementById('dico-'+(i-1)).className='dp-ico done'; document.getElementById('dico-'+(i-1)).textContent='✓'; }
+      document.getElementById('dico-'+i).className='dp-ico running';
+    }, t);
+  });
+
+  setTimeout(() => {
+    document.getElementById('dico-4').className='dp-ico done';
+    document.getElementById('dico-4').textContent='✓';
+    setTimeout(() => {
+      currentStep = 4;
+      updateWizard();
+      const subdomain = repo.name.toLowerCase().replace(/\s+/g,'-');
+      document.getElementById('successDesc').textContent = `${repo.name} is now live on ${plat.name}!`;
+      document.getElementById('successUrl').textContent = `https://${subdomain}.${plat.id === 'vercel' ? 'vercel.app' : plat.id === 'netlify' ? 'netlify.app' : plat.id === 'render' ? 'onrender.com' : plat.id+'.app'}`;
+      showToast('🎉 Deployed successfully!');
+    }, 1000);
+  }, 9800);
+}
+
+function resetWizard() {
+  currentStep = 0; selectedRepo = null; selectedPlatform = null;
+  document.querySelectorAll('.repo-pick-item').forEach(el => { el.classList.remove('selected'); el.querySelector('.rp-check').textContent = ''; });
+  document.querySelectorAll('.plat-card').forEach(el => el.classList.remove('selected'));
+  document.getElementById('nextBtn').style.display = 'flex';
+  document.getElementById('logTerminal').innerHTML = '<div class="log-line info">// CymorGit Deployment Engine v1.0</div><div class="log-line">Waiting for deployment to start...</div>';
+  updateWizard();
+}
+
+updateWizard();
+if (urlRepoId && urlPlatId) {
+  setTimeout(() => { currentStep = 2; buildEnvEditor(); updateWizard(); }, 300);
+}
+</script>
+</body>
+</html>

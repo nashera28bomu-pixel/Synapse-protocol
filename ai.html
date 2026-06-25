@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"/>
+<title>AI Assistant — CymorGit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/globals.css"/>
+<style>
+/* AI layout — full height chat */
+body, html { height: 100%; }
+
+.ai-layout {
+  display: flex; flex-direction: column;
+  height: 100dvh; overflow: hidden;
+}
+
+/* Header */
+.ai-header {
+  padding: 12px 16px;
+  background: rgba(8,12,24,0.95); backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 12px; flex-shrink: 0;
+}
+.ai-header-logo {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--violet), var(--cyan));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
+}
+.ai-header-info { flex: 1; min-width: 0; }
+.ai-header-name { font-family:'Space Grotesk',sans-serif; font-size: 15px; font-weight: 700; }
+.ai-header-status { font-size: 11px; color: var(--green); display: flex; align-items: center; gap: 5px; font-family:'JetBrains Mono',monospace; }
+.ai-status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: statusPulse 2s ease-in-out infinite; }
+@keyframes statusPulse { 0%,100%{opacity:1}50%{opacity:0.4} }
+.ai-header-actions { display: flex; gap: 8px; }
+.ai-hbtn {
+  padding: 7px 12px; border-radius: var(--radius-sm); font-size: 11px; font-weight: 600;
+  border: 1px solid var(--border); background: rgba(255,255,255,0.04); color: var(--text);
+  cursor: pointer; transition: all 0.2s; font-family:'Inter',sans-serif; white-space: nowrap;
+}
+.ai-hbtn:hover { border-color: var(--cyan); color: var(--cyan); }
+
+/* Repo context bar */
+.repo-context {
+  background: rgba(124,58,237,0.08); border-bottom: 1px solid rgba(124,58,237,0.2);
+  padding: 10px 16px; display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+}
+.rc-icon { font-size: 14px; }
+.rc-text { flex: 1; font-size: 12px; color: var(--muted); min-width: 0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.rc-text strong { color: var(--violet2); }
+.rc-close { width: 20px; height: 20px; border-radius: 50%; background: rgba(255,255,255,0.08); border: none; color: var(--muted); cursor: pointer; font-size: 10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+
+/* Messages area */
+.ai-messages {
+  flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 16px;
+  scrollbar-width: thin; scrollbar-color: var(--violet) transparent;
+}
+.ai-messages::-webkit-scrollbar { width: 3px; }
+.ai-messages::-webkit-scrollbar-thumb { background: var(--violet); border-radius: 99px; }
+
+/* Message bubbles */
+.msg { display: flex; gap: 10px; align-items: flex-end; }
+.msg-user { flex-direction: row-reverse; }
+
+.msg-av {
+  width: 30px; height: 30px; border-radius: 9px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 13px;
+}
+.msg-bot  .msg-av { background: linear-gradient(135deg,var(--violet),var(--cyan)); }
+.msg-user .msg-av { background: rgba(124,58,237,0.2); }
+
+.msg-bubble {
+  max-width: calc(100% - 50px); padding: 11px 14px;
+  border-radius: 16px; font-size: 13px; line-height: 1.65; word-break: break-word;
+}
+.msg-bot  .msg-bubble { background: var(--card); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+.msg-user .msg-bubble { background: linear-gradient(135deg,rgba(124,58,237,0.3),rgba(0,212,255,0.15)); border: 1px solid rgba(124,58,237,0.3); border-bottom-right-radius: 4px; color: var(--text); }
+
+.msg-bubble code {
+  background: rgba(0,212,255,0.1); padding: 1px 6px; border-radius: 4px;
+  font-family:'JetBrains Mono',monospace; font-size: 11px; color: var(--cyan);
+}
+.msg-bubble pre {
+  background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+  padding: 10px; margin: 8px 0; font-family:'JetBrains Mono',monospace;
+  font-size: 11px; overflow-x: auto; white-space: pre-wrap; word-break: break-all; line-height: 1.6;
+}
+.msg-time { font-size: 10px; color: var(--muted); margin-top: 4px; text-align: right; font-family:'JetBrains Mono',monospace; }
+.msg-user .msg-time { text-align: right; }
+
+/* Typing indicator */
+.typing-indicator { display: flex; gap: 4px; align-items: center; padding: 12px 14px; }
+.typing-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--muted);
+  animation: typingBounce 1.2s ease-in-out infinite;
+}
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typingBounce { 0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)} }
+
+/* Quick prompts */
+.quick-prompts {
+  padding: 12px 16px 6px; flex-shrink: 0;
+  display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none;
+}
+.quick-prompts::-webkit-scrollbar { display: none; }
+.qp-btn {
+  padding: 8px 12px; border-radius: 99px; font-size: 12px; font-weight: 600;
+  border: 1px solid var(--border); background: rgba(255,255,255,0.04); color: var(--text);
+  cursor: pointer; white-space: nowrap; transition: all 0.2s; flex-shrink: 0;
+  font-family:'Inter',sans-serif;
+}
+.qp-btn:hover { border-color: var(--cyan); color: var(--cyan); background: rgba(0,212,255,0.06); }
+
+/* Input area */
+.ai-input-wrap {
+  padding: 12px 16px 16px; flex-shrink: 0;
+  background: rgba(8,12,24,0.95); backdrop-filter: blur(16px);
+  border-top: 1px solid var(--border);
+}
+.ai-input-row {
+  display: flex; gap: 10px; align-items: flex-end;
+  background: rgba(255,255,255,0.04); border: 1.5px solid var(--border);
+  border-radius: 16px; padding: 10px 12px; transition: border-color 0.2s;
+}
+.ai-input-row:focus-within { border-color: rgba(0,212,255,0.4); }
+.ai-textarea {
+  flex: 1; background: none; border: none; outline: none;
+  font-size: 14px; color: var(--text); font-family:'Inter',sans-serif;
+  resize: none; min-height: 20px; max-height: 120px; line-height: 1.5;
+}
+.ai-textarea::placeholder { color: var(--muted); }
+.ai-input-actions { display: flex; gap: 6px; align-items: flex-end; flex-shrink: 0; }
+.ai-attach-btn {
+  width: 32px; height: 32px; border-radius: 8px; background: none; border: none;
+  color: var(--muted); cursor: pointer; display:flex; align-items:center; justify-content:center;
+  font-size: 16px; transition: color 0.2s;
+}
+.ai-attach-btn:hover { color: var(--cyan); }
+.ai-send-btn {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: linear-gradient(135deg,var(--violet),var(--cyan));
+  border: none; cursor: pointer; display:flex; align-items:center; justify-content:center;
+  font-size: 16px; transition: opacity 0.2s; flex-shrink: 0;
+}
+.ai-send-btn:hover { opacity: 0.85; }
+.ai-send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.ai-input-hint { font-size: 11px; color: var(--muted); margin-top: 6px; text-align: center; font-family:'JetBrains Mono',monospace; }
+
+/* Mode selector */
+.ai-modes {
+  display: flex; gap: 6px; margin-bottom: 10px; overflow-x: auto; scrollbar-width: none;
+}
+.ai-modes::-webkit-scrollbar { display: none; }
+.mode-btn {
+  padding: 6px 12px; border-radius: 99px; font-size: 11px; font-weight: 600;
+  border: 1px solid var(--border); background: transparent; color: var(--muted);
+  cursor: pointer; white-space: nowrap; transition: all 0.2s; flex-shrink: 0;
+  font-family:'Inter',sans-serif;
+}
+.mode-btn.active { background: linear-gradient(135deg,var(--violet),var(--cyan)); border-color: transparent; color: #fff; }
+
+/* Welcome screen */
+.ai-welcome {
+  display: flex; flex-direction: column; align-items: center; padding: 24px 16px; text-align: center;
+}
+.ai-welcome-ico { font-size: 48px; margin-bottom: 14px; }
+.ai-welcome-title { font-family:'Space Grotesk',sans-serif; font-size: 20px; font-weight: 800; margin-bottom: 8px; }
+.ai-welcome-sub { font-size: 13px; color: var(--muted); margin-bottom: 20px; max-width: 280px; line-height: 1.6; }
+.suggestion-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; margin-bottom: 16px; }
+.suggestion-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 12px; cursor: pointer; transition: all 0.2s; text-align: left;
+}
+.suggestion-card:hover { border-color: rgba(0,212,255,0.3); }
+.sug-ico   { font-size: 18px; margin-bottom: 6px; }
+.sug-title { font-size: 12px; font-weight: 600; margin-bottom: 3px; }
+.sug-desc  { font-size: 11px; color: var(--muted); line-height: 1.4; }
+</style>
+</head>
+<body>
+
+<div id="mini-loader"><div class="mini-logo">CG</div><div class="mini-spinner"></div><div class="mini-msg" id="miniMsg">Loading...</div></div>
+<div id="toast"></div>
+
+<div class="ai-layout">
+
+  <!-- Header -->
+  <div class="ai-header">
+    <a href="index.html" class="nav-logo" style="text-decoration:none">
+      <div class="nav-logo-icon" style="width:32px;height:32px;font-size:12px">CG</div>
+    </a>
+    <div class="ai-header-logo">🤖</div>
+    <div class="ai-header-info">
+      <div class="ai-header-name">CymorGit AI</div>
+      <div class="ai-header-status"><div class="ai-status-dot"></div>Online · Powered by Gemini</div>
+    </div>
+    <div class="ai-header-actions">
+      <button class="ai-hbtn" onclick="clearChat()">🗑 Clear</button>
+      <button class="ai-hbtn" onclick="navigate('explore.html')">🔍 Explore</button>
+    </div>
+  </div>
+
+  <!-- Repo context (shown when repo is selected) -->
+  <div class="repo-context" id="repoContext" style="display:none">
+    <span class="rc-icon">📁</span>
+    <span class="rc-text">Context: <strong id="repoContextName">No repo</strong> — AI can answer questions about this code</span>
+    <button class="rc-close" onclick="clearRepoContext()">✕</button>
+  </div>
+
+  <!-- Messages -->
+  <div class="ai-messages" id="aiMessages">
+    <!-- Welcome screen -->
+    <div class="ai-welcome" id="welcomeScreen">
+      <div class="ai-welcome-ico">🤖</div>
+      <div class="ai-welcome-title">CymorGit AI Assistant</div>
+      <div class="ai-welcome-sub">Ask me anything about your code, repositories, or how to deploy your bot.</div>
+      <div class="suggestion-grid">
+        <div class="suggestion-card" onclick="sendSuggestion('Explain how Baileys session management works')">
+          <div class="sug-ico">📚</div>
+          <div class="sug-title">Explain Code</div>
+          <div class="sug-desc">How does Baileys session management work?</div>
+        </div>
+        <div class="suggestion-card" onclick="sendSuggestion('Debug this error: Cannot read properties of undefined (reading session)')">
+          <div class="sug-ico">🐛</div>
+          <div class="sug-title">Debug Error</div>
+          <div class="sug-desc">Paste an error and get a fix instantly</div>
+        </div>
+        <div class="suggestion-card" onclick="sendSuggestion('Scan my WhatsApp bot for security vulnerabilities and exposed API keys')">
+          <div class="sug-ico">🔒</div>
+          <div class="sug-title">Security Scan</div>
+          <div class="sug-desc">Find exposed keys and vulnerabilities</div>
+        </div>
+        <div class="suggestion-card" onclick="sendSuggestion('Help me deploy my Node.js Telegram bot to Render for free')">
+          <div class="sug-ico">🚀</div>
+          <div class="sug-title">Deploy Help</div>
+          <div class="sug-desc">Guide me through deploying to Render</div>
+        </div>
+        <div class="suggestion-card" onclick="sendSuggestion('Generate a WhatsApp bot command handler in Node.js with Baileys')">
+          <div class="sug-ico">⚡</div>
+          <div class="sug-title">Generate Code</div>
+          <div class="sug-desc">Create a bot command from scratch</div>
+        </div>
+        <div class="suggestion-card" onclick="sendSuggestion('Refactor and optimize this Express.js route for better performance')">
+          <div class="sug-ico">🔧</div>
+          <div class="sug-title">Refactor Code</div>
+          <div class="sug-desc">Optimize and clean up your code</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick prompts + modes -->
+  <div class="quick-prompts" id="quickPrompts" style="display:none">
+    <button class="qp-btn" onclick="sendSuggestion('Explain this code')">📚 Explain</button>
+    <button class="qp-btn" onclick="sendSuggestion('Find and fix bugs in this code')">🐛 Debug</button>
+    <button class="qp-btn" onclick="sendSuggestion('Scan for security issues')">🔒 Security</button>
+    <button class="qp-btn" onclick="sendSuggestion('Optimize this code for performance')">⚡ Optimize</button>
+    <button class="qp-btn" onclick="sendSuggestion('Generate documentation for this')">📄 Docs</button>
+    <button class="qp-btn" onclick="sendSuggestion('Write tests for this code')">🧪 Tests</button>
+    <button class="qp-btn" onclick="sendSuggestion('Refactor this code to be cleaner')">🔧 Refactor</button>
+  </div>
+
+  <!-- Input -->
+  <div class="ai-input-wrap">
+    <div class="ai-modes" id="aiModes">
+      <button class="mode-btn active" onclick="setMode(this,'chat')">💬 Chat</button>
+      <button class="mode-btn" onclick="setMode(this,'debug')">🐛 Debug</button>
+      <button class="mode-btn" onclick="setMode(this,'security')">🔒 Security</button>
+      <button class="mode-btn" onclick="setMode(this,'learn')">📚 Learn</button>
+      <button class="mode-btn" onclick="setMode(this,'generate')">⚡ Generate</button>
+    </div>
+    <div class="ai-input-row">
+      <textarea class="ai-textarea" id="aiInput" placeholder="Ask anything about your code..." rows="1"
+        oninput="autoResize(this)" onkeydown="handleKey(event)"></textarea>
+      <div class="ai-input-actions">
+        <button class="ai-attach-btn" onclick="showToast('File upload coming with backend!')">📎</button>
+        <button class="ai-send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
+      </div>
+    </div>
+    <div class="ai-input-hint">⚡ Powered by Gemini · <span id="queryCount">6</span> queries remaining today</div>
+  </div>
+
+</div><!-- end ai-layout -->
+
+<script src="js/data.js"></script>
+<script>
+let messages = [];
+let isTyping = false;
+let queryCount = 6;
+let currentMode = 'chat';
+let repoContext = null;
+
+// Check URL for repo context
+const urlParams = new URLSearchParams(window.location.search);
+const urlRepo = parseInt(urlParams.get('repo'));
+if (urlRepo) {
+  repoContext = CG.repos.find(r => r.id === urlRepo);
+  if (repoContext) showRepoContext();
+}
+
+function showRepoContext() {
+  document.getElementById('repoContext').style.display = 'flex';
+  document.getElementById('repoContextName').textContent = repoContext.name;
+}
+function clearRepoContext() {
+  repoContext = null;
+  document.getElementById('repoContext').style.display = 'none';
+}
+
+function setMode(el, mode) {
+  currentMode = mode;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  const placeholders = {
+    chat:'Ask anything about your code...',
+    debug:'Paste your error message or stack trace...',
+    security:'Paste code to scan for vulnerabilities...',
+    learn:'What concept do you want to learn about?',
+    generate:'Describe what code you want to generate...',
+  };
+  document.getElementById('aiInput').placeholder = placeholders[mode];
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+}
+
+function clearChat() {
+  messages = [];
+  document.getElementById('aiMessages').innerHTML = '';
+  document.getElementById('welcomeScreen') && (document.getElementById('welcomeScreen').style.display='flex');
+  document.getElementById('quickPrompts').style.display = 'none';
+  showToast('Chat cleared');
+}
+
+function sendSuggestion(text) {
+  document.getElementById('aiInput').value = text;
+  sendMessage();
+}
+
+function sendMessage() {
+  const input = document.getElementById('aiInput');
+  const text = input.value.trim();
+  if (!text || isTyping) return;
+  if (queryCount <= 0) { showToast('Daily limit reached. Upgrade to Premium for unlimited AI!'); return; }
+
+  // Hide welcome screen
+  const ws = document.getElementById('welcomeScreen');
+  if (ws) ws.style.display = 'none';
+  document.getElementById('quickPrompts').style.display = 'flex';
+
+  addMessage('user', text);
+  input.value = ''; input.style.height = 'auto';
+  queryCount--;
+  document.getElementById('queryCount').textContent = queryCount;
+
+  showTyping();
+  const delay = 1200 + Math.random() * 800;
+  setTimeout(() => {
+    hideTyping();
+    addMessage('bot', generateResponse(text));
+  }, delay);
+}
+
+function addMessage(role, text) {
+  const wrap = document.getElementById('aiMessages');
+  const time = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  const isBot = role === 'bot';
+  const div = document.createElement('div');
+  div.className = 'msg ' + (isBot ? 'msg-bot' : 'msg-user');
+  div.innerHTML = `
+    <div class="msg-av">${isBot?'🤖':'😎'}</div>
+    <div>
+      <div class="msg-bubble">${formatMsg(text)}</div>
+      <div class="msg-time">${time}</div>
+    </div>`;
+  wrap.appendChild(div);
+  wrap.scrollTop = wrap.scrollHeight;
+}
+
+function formatMsg(text) {
+  return text
+    .replace(/```([\s\S]*?)```/g, '<pre>$1</pre>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n/g, '<br/>');
+}
+
+function showTyping() {
+  isTyping = true;
+  const wrap = document.getElementById('aiMessages');
+  const div = document.createElement('div');
+  div.className = 'msg msg-bot'; div.id = 'typingMsg';
+  div.innerHTML = '<div class="msg-av">🤖</div><div class="msg-bubble"><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>';
+  wrap.appendChild(div);
+  wrap.scrollTop = wrap.scrollHeight;
+}
+
+function hideTyping() {
+  isTyping = false;
+  const el = document.getElementById('typingMsg');
+  if (el) el.remove();
+}
+
+function generateResponse(q) {
+  const ql = q.toLowerCase();
+  if (ql.includes('baileys') || ql.includes('whatsapp') || ql.includes('session')) {
+    return `**Baileys Session Management** works like this:\n\n1. When a user first connects, Baileys generates a \`session\` via QR code or pairing code\n2. The session is stored in \`./sessions/\` as JSON files\n3. On restart, Baileys reads these files to restore the connection\n\nFor **MongoDB storage**, you can use \`@whiskeysockets/baileys\` with a custom auth state:\n\n\`\`\`js\nconst { useMongoDBAuthState } = require('./utils/mongoAuth')\nconst { state, saveCreds } = await useMongoDBAuthState(db)\n\`\`\`\n\nThis keeps sessions persistent even when your Render server restarts. Want me to generate the full \`mongoAuth.js\` utility?`;
+  }
+  if (ql.includes('error') || ql.includes('debug') || ql.includes('cannot read')) {
+    return `**Error Analysis:**\n\nThis error usually means you're trying to access a property on an \`undefined\` value.\n\n**Common causes:**\n- Session file is corrupted or missing\n- MongoDB connection failed before bot started\n- Async function not awaited properly\n\n**Fix:**\n\`\`\`js\n// Add null check before accessing session\nif (!session || !session.creds) {\n  console.log('Session not found, starting fresh...')\n  await clearAuthState()\n  return\n}\n\`\`\`\n\nDo you want me to analyze the full stack trace if you paste it here?`;
+  }
+  if (ql.includes('deploy') || ql.includes('render') || ql.includes('railway')) {
+    return `**Deploying to Render (Free Tier):**\n\n1. Push your code to GitHub\n2. Go to render.com → New → Web Service\n3. Connect your GitHub repo\n4. Set these build settings:\n\n\`\`\`\nBuild Command: npm install\nStart Command: node index.js\nNode Version: 18\n\`\`\`\n\n5. Add your ENV variables in the Render dashboard\n6. Deploy!\n\n⚠️ **Important for bots:** Render free tier sleeps after 15 min inactivity. Use a keep-alive ping or upgrade to Starter plan ($7/mo).\n\nWant me to generate a \`keep-alive.js\` script for your bot?`;
+  }
+  if (ql.includes('security') || ql.includes('api key') || ql.includes('vulnerability')) {
+    return `**Security Scan Results:**\n\n🔴 **High Risk:**\n- Hardcoded API key found in \`config.js\` line 12\n- No input validation on user commands\n\n🟡 **Medium Risk:**\n- \`.env\` file might be committed to git\n- No rate limiting on bot commands\n\n🟢 **Good:**\n- MongoDB connection uses env variable\n- No exposed admin endpoints\n\n**Quick fixes:**\n\`\`\`js\n// Move keys to .env\nconst API_KEY = process.env.API_KEY\n\n// Add .env to .gitignore\necho '.env' >> .gitignore\n\`\`\`\n\nShall I generate a full security report with all fixes?`;
+  }
+  if (ql.includes('generate') || ql.includes('create') || ql.includes('build') || ql.includes('command')) {
+    return `**Generated WhatsApp Bot Command:**\n\n\`\`\`js\n// commands/ping.js\nmodule.exports = {\n  name: 'ping',\n  alias: ['p'],\n  desc: 'Check bot response time',\n  category: 'utility',\n  async execute({ sock, msg, from }) {\n    const start = Date.now()\n    await sock.sendMessage(from, { text: '🏓 Pong!' })\n    const ms = Date.now() - start\n    await sock.sendMessage(from, {\n      text: \`⚡ Response time: \${ms}ms\`\n    })\n  }\n}\n\`\`\`\n\nThis uses the standard Baileys command structure. Want me to generate more commands like **menu**, **ai**, **sticker**, or **download**?`;
+  }
+  if (ql.includes('mpesa') || ql.includes('daraja') || ql.includes('stk')) {
+    return `**M-Pesa STK Push setup:**\n\n\`\`\`js\nasync function stkPush(phone, amount, desc) {\n  const token = await getAccessToken()\n  const timestamp = new Date().toISOString()\n    .replace(/[^0-9]/g,'')\n    .slice(0,14)\n  \n  const password = Buffer.from(\n    process.env.SHORTCODE +\n    process.env.PASSKEY +\n    timestamp\n  ).toString('base64')\n\n  const res = await axios.post(\n    'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest',\n    { BusinessShortCode, Password, Timestamp,\n      TransactionType: 'CustomerPayBillOnline',\n      Amount: amount, PartyA: phone,\n      PartyB: process.env.SHORTCODE,\n      PhoneNumber: phone, CallBackURL,\n      AccountReference: 'CymorPay',\n      TransactionDesc: desc },\n    { headers: { Authorization: \`Bearer \${token}\` } }\n  )\n  return res.data\n}\n\`\`\`\n\nNeed the full Daraja integration with callback handler?`;
+  }
+  const defaults = [
+    `That's a great question! **Here's what I know:**\n\nBased on your query, I'd recommend checking the official documentation and ensuring your project structure follows best practices.\n\nFor Node.js/Express projects, always:\n1. Use environment variables for secrets\n2. Add proper error handling with try/catch\n3. Validate all user inputs\n\nWant me to look at specific code? Paste it here and I'll analyze it in detail!`,
+    `**CymorGit AI here!** 🤖\n\nI can help you with:\n- **Explaining** any code or concept\n- **Debugging** errors and stack traces\n- **Generating** code for WhatsApp/Telegram bots\n- **Security scanning** your repositories\n- **Deployment** guides for Render, Railway, Vercel\n\nPaste your code or describe what you need and I'll get to work!`,
+    `Based on your question, here's my analysis:\n\nFor the best results with your bot project:\n\`\`\`js\n// Always handle errors gracefully\ntry {\n  await yourFunction()\n} catch (err) {\n  console.error('Error:', err.message)\n  // notify admin or retry\n}\n\`\`\`\n\nWould you like me to generate a complete error handler module for your project?`,
+  ];
+  return defaults[Math.floor(Math.random() * defaults.length)];
+}
+</script>
+</body>
+</html>
